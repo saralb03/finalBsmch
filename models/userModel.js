@@ -20,12 +20,7 @@ let userSchema = new mongoose.Schema({
   },
   active:{
     type:Boolean, default: true,
-  },
-  location:String,
-  nickname:String,
-  rank:{
-    type:Number, default:10
-  }
+   }
 })
 
 exports.UserModel = mongoose.model("users",userSchema);
@@ -37,15 +32,13 @@ exports.createToken = (_id,role) => {
 
 exports.validUser = (_reqBody) => {
   let joiSchema = Joi.object({
-    name:Joi.string().min(2).max(99).required(),
+    firstName:Joi.string().min(2).max(99).required(),
+    lastName:Joi.string().min(2).max(99).required(),
     email:Joi.string().min(2).max(99).email().required(),
     password:Joi.string().min(3).max(99).required(),
-    phone:Joi.string().min(8).max(99).required(),
     birth_date:Joi.string().min(2).max(99).required(),
-    info:Joi.string().min(2).max(99).required(),
     img_url:Joi.string().min(2).max(99).allow(null,""),
     location:Joi.string().min(2).max(99).required(),
-    nickname:Joi.string().min(2).max(99).required(),
   })
 
   return joiSchema.validate(_reqBody);

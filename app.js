@@ -2,26 +2,24 @@ const express = require("express");
 const path = require("path");
 const http = require("http");
 const cors = require("cors");
-// חובה כדי שנוכל לעבוד עם קבצים
 const fileUpload = require("express-fileupload");
 
-const {routesInit} = require("./routes/config_routes")
+const { routesInit } = require("./routes/config_routes"); // Ensure correct path
+
 require("./db/mongoconnect");
 
 const app = express();
 
 app.use(cors());
-
-// מפעיל את האפשרות באקספרס לעבוד עם קבצים
-app.use(fileUpload({limits:{fileSize: 1024 * 1024 * 5 }}))
-
+app.use(fileUpload({ limits: { fileSize: 1024 * 1024 * 5 } }));
 app.use(express.json());
-// הגדרת תקיית הפאבליק כתקייה ראשית
-app.use(express.static(path.join(__dirname,"public")))
+app.use(express.static(path.join(__dirname, "public")));
 
-routesInit(app);
+routesInit(app); // Use the routesInit function
 
 const server = http.createServer(app);
 
-let port = process.env.PORT || 3003
-server.listen(port);
+const port = process.env.PORT || 3001;
+server.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});

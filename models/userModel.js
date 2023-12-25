@@ -9,7 +9,7 @@ let userSchema = new mongoose.Schema({
   email:String,
   password:String,
   birth_date:Date,
-  info:String,
+  location:String,
   img_url:String,
   date_created:{
     type:Date , default:Date.now()

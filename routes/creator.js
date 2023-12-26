@@ -1,26 +1,26 @@
 const { CreatorModel } = require("../models/creatorModel");
 const Joi = require("joi"); // Import Joi for validation
 
-const validCreator = (_reqBody) => {
-  const joiSchema = Joi.object({
-    // Define validation fields for CreatorModel properties
-    // Example:
-    // name: Joi.string().min(2).max(99).required(),
-    // email: Joi.string().email().required(),
-    // ...
+// const validCreator = (_reqBody) => {
+//   const joiSchema = Joi.object({
+//     // Define validation fields for CreatorModel properties
+//     // Example:
+//     // name: Joi.string().min(2).max(99).required(),
+//     // email: Joi.string().email().required(),
+//     // ...
 
-    // For now, assuming no specific validation for the creator
-  });
+//     // For now, assuming no specific validation for the creator
+//   });
 
-  return joiSchema.validate(_reqBody);
-};
+//   return joiSchema.validate(_reqBody);
+// };
 
 const createCreator = async (req, res) => {
-  let validBody = validCreator(req.body);
+//   let validBody = validCreator(req.body);
 
-  if (validBody.error) {
-    return res.status(400).json(validBody.error.details);
-  }
+//   if (validBody.error) {
+//     return res.status(400).json(validBody.error.details);
+//   }
 
   try {
     let creator = new CreatorModel(req.body);
@@ -34,5 +34,5 @@ const createCreator = async (req, res) => {
 };
 
 module.exports = {
-  createCreator,
+  createCreator
 };

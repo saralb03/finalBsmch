@@ -36,7 +36,8 @@ const count = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  let validBody = validUser(req.body);
+  // let validBody = validUser(req.body);
+  let validBody = req.body;
   if (validBody.error) {
     return res.status(400).json(validBody.error.details);
   }
@@ -114,6 +115,85 @@ const changeActive = async (req, res) => {
   }
 };
 
+
+exports.resetPassword = async (req, res) =>{
+  const resetToken = req.params.reset_token;
+  // const encryptedResetToken = crypto
+  //   .createHash("sha256")
+  //   .update(resetToken)
+  //   .digest("hex");
+  const newPassword = req.body.new_password;
+  const confirmNewPassword = req.body.confirm_new_password;
+  if (newPassword != confirmNewPassword) {
+    res.status(400).json('different passswords')
+  }
+  let encryptedPasssword = await bcrypt.hash(newPassword, 10);
+  //let encryptedPasssword =newPassword;
+  try {
+    console.log(resetToken);
+    //  console.log(encryptedResetToken);
+    //     console.log(resetToken);
+    const user = await UserModel.findOneAndUpdate({
+      password_reset_token: resetToken,
+      password_reset_expires: { $gt: Date.now() }
+    },
+      {
+        password: encryptedPasssword,
+        password_reset_token: null,
+        password_reset_expires: null
+      },
+      { new: true })
+
+    if (!user) {
+      res.status(400).json('Token is expired or wrong');
+    }
+
+    user.password = "********";
+    res.json(user)
+  }
+
+  catch (err) {
+    res.status(500).json(err)
+  }
+},
+
+exports.forgotPassword = async (req, res) => {
+  const email = req.body.email
+  const { passwordResetToken, passwordResetExpires } = createResetToken()
+  console.log(passwordResetToken);
+  try {
+    const user = await UserModel.findOneAndUpdate({ email },
+      {
+        password_reset_token: passwordResetToken,
+        password_reset_expires: passwordResetExpires
+      },
+      { new: true })
+    if (user) {
+      sendEmail(email, 'reset password', passwordResetToken)//send url
+    }
+    res.status(200).json(user)
+  }
+  catch (err) {
+    res.status(500).json(err)
+  }
+
+}
+const createResetToken = () => {
+const resetToken = crypto
+  .randomBytes(32) 
+  .toString("hex"); 
+
+passwordResetToken = crypto //saving the encrypted reset token into db
+  .createHash("sha256")
+  .update(resetToken)
+  .digest("hex");
+
+passwordResetExpires = Date.now() + 10 * 1000 * 60; //milliseconds 10 min
+
+return {passwordResetToken,passwordResetExpires};
+}
+
+
 module.exports = {
   checkToken,
   myInfo,
@@ -123,4 +203,5 @@ module.exports = {
   login,
   changeRole,
   changeActive,
+  createResetToken,
 };

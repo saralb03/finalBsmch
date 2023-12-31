@@ -54,6 +54,7 @@
 // }
 
 
+const bcrypt = require("bcrypt"); 
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
@@ -62,7 +63,7 @@ const { config } = require("../config/secret");
 let userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: true,
+    required: [true, "first name is requred"],
     minlength: 2,
     maxlength: 99,
   },
@@ -82,9 +83,13 @@ let userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    minLength: 8,
     required: true,
-    minlength: 3,
-    maxlength: 99,
+    select: false,
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, "Please retype the password"],
   },
   birth_date: {
     type: Date,
@@ -108,12 +113,25 @@ let userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    enum: {
+      values: ["admin", "user", "premium"],
+      message: "the value must be either 'admin','user','premium'",
+    },
     default: "user",
   },
   active: {
     type: Boolean,
     default: true,
   },
+  // passwordChangedAt: Date,
+  password_reset_token: {
+    type: String,
+  default: null,
+},
+  password_reset_expires:{ 
+    type:Date,
+  default: null,
+},
 });
 
 // Add a pre-save hook to handle the unique index error
@@ -128,6 +146,39 @@ userSchema.pre("save", function (next) {
     }
   });
 });
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  // console.log(this);
+  this.id = String(this._id);
+  next();
+});
+
+userSchema.methods.checkPassword = async function (password, hash) {
+  return await bcrypt.compare(password, hash);
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  // Generate a random token (32 bytes) and convert it to a hexadecimal string
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  // Save the encrypted reset token into the database
+  this.passwordResetToken = crypto
+    .createHash("sha256") // Use the desired hashing algorithm, e.g., "sha256"
+    .update(resetToken)
+    .digest("hex");
+
+  // Set the expiration date for the reset token (10 minutes from now)
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // milliseconds (10 minutes)
+
+  // Return the plain hexadecimal string token to be sent by email
+  return resetToken;
+};
 
 const UserModel = mongoose.model("users", userSchema);
 
@@ -138,19 +189,19 @@ exports.createToken = (_id, role) => {
   return token;
 };
 
-exports.validUser = async (_reqBody) => {
-  let joiSchema = Joi.object({
-    firstName: Joi.string().min(2).max(99).required(),
-    lastName: Joi.string().min(2).max(99).required(),
-    email: Joi.string().min(2).max(99).email().required(),
-    password: Joi.string().min(3).max(99).required(),
-    birth_date: Joi.string().min(2).max(99).required(),
-    img_url: Joi.string().min(2).max(99).allow(null, ""),
-    location: Joi.string().min(2).max(99).required(),
-  });
+// exports.validUser = async (_reqBody) => {
+//   let joiSchema = Joi.object({
+//     firstName: Joi.string().min(2).max(99).required(),
+//     lastName: Joi.string().min(2).max(99).required(),
+//     // email: Joi.string().min(2).max(99).email().required(),
+//     // password: Joi.string().min(3).max(99).required(),
+//     birth_date: Joi.string().min(2).max(99).required(),
+//     img_url: Joi.string().min(2).max(99).allow(null, ""),
+//     location: Joi.string().min(2).max(99).required(),
+//   });
 
-  return joiSchema.validate(_reqBody);
-};
+//   return joiSchema.validate(_reqBody);
+// };
 
 exports.validLogin = (_reqBody) => {
   let joiSchema = Joi.object({
@@ -160,3 +211,6 @@ exports.validLogin = (_reqBody) => {
 
   return joiSchema.validate(_reqBody);
 };
+
+
+//---------------------------------------------------------

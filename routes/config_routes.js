@@ -1,5 +1,6 @@
 const express = require("express");
-const { auth, authAdmin } = require("../middlewares/auth");
+const { authAdmin } = require("../middlewares/auth");
+const auth = require('../middlewares/auth')
 const userController = require("./users");
 const studentController = require("./student");
 const creatorController = require("./creator");
@@ -14,14 +15,16 @@ router.get("/", (req, res) => {
 });
 
 // Other routes from user.controller.js
-router.get("/checkToken", auth, userController.checkToken);
-router.get("/myInfo", auth, userController.myInfo);
+router.get("/checkToken", auth.auth, userController.checkToken);
+router.get("/myInfo", auth.auth, userController.myInfo);
 router.get("/usersList", authAdmin, userController.usersList);
 router.get("/count", authAdmin, userController.count);
 router.post("/", userController.createUser);
 router.post("/login", userController.login);
 router.patch("/changeRole/:userID", authAdmin, userController.changeRole);
 router.patch("/changeActive/:userID", authAdmin, userController.changeActive);
+router.post("/forgotPassword", userController.forgotPassword);
+
 
 router.post("/student", studentController.createStudent);
 router.post("/creator", creatorController.createCreator);

@@ -1,7 +1,16 @@
 const jwt = require("jsonwebtoken");
 const {config} = require("../config/secret")
+const asyncWrap = require("../utils/asyncWrapper");
+const { decodeToken, generateToken } = require("../utils/jwt");
+const AppError = require("../utils/AppError");
+const sendEmail = require("../utils/email");
+const crypto = require("crypto");
+// const { User } = require("../models/UserModel");
+const { UserModel } = require("../models/userModel");
 
-exports.auth = (req,res,next) => {
+
+
+const auth = (req,res,next) => {
   let token = req.header("x-api-key");
   if(!token){
     return res.status(401).json({msg:"You need to send token to this endpoint url"})
@@ -20,7 +29,7 @@ exports.auth = (req,res,next) => {
   }
 }
 
-exports.authAdmin = (req,res,next) => {
+const authAdmin = (req,res,next) => {
   let token = req.header("x-api-key");
   if(!token){
     return res.status(401).json({msg:"You need to send token to this endpoint url"})
@@ -31,9 +40,6 @@ exports.authAdmin = (req,res,next) => {
     if(decodeToken.role != "admin"){
       return res.status(401).json({msg:"Token invalid or expired, code: 3"})
     }
-   
-    // add to req , so the next function will recognize
-    // the tokenData/decodeToken
     req.tokenData = decodeToken;
 
     next();
@@ -43,112 +49,87 @@ exports.authAdmin = (req,res,next) => {
     return res.status(401).json({msg:"Token invalid or expired, log in again or you hacker!"})
   }
 }
-//new codeeeee------------------
-// const jwt = require("jsonwebtoken");
-// const { config } = require("../config/secret");
-// const { decodeToken, generateToken } = require("../utils/jwt");
-// const AppError = require("../utils/AppError");
-// const sendEmail = require("../utils/email");
-// const { User } = require("../models/userModel");
-// const asyncWrap = require("../utils/asyncWrapper");
-
-// exports.auth = asyncWrap(async (req, res, next) => {
-//   let token = req.header("x-api-key");
-//   if (!token) {
-//     throw new AppError(401, "You need to send a token to this endpoint URL");
-//   }
-
-//   try {
-//     const payload = decodeToken(token);
-//     req.tokenData = payload;
-//     next();
-//   } catch (err) {
-//     console.log(err);
-//     throw new AppError(401, "Token invalid or expired, log in again or you hacker!");
-//   }
-// });
-
-// exports.authAdmin = asyncWrap(async (req, res, next) => {
-//   let token = req.header("x-api-key");
-//   if (!token) {
-//     throw new AppError(401, "You need to send a token to this endpoint URL");
-//   }
-
-//   try {
-//     const payload = decodeToken(token);
-//     if (payload.role !== "admin") {
-//       throw new AppError(401, "Token invalid or expired, code: 3");
-//     }
-
-//     req.tokenData = payload;
-//     next();
-//   } catch (err) {
-//     console.log(err);
-//     throw new AppError(401, "Token invalid or expired, log in again or you hacker!");
-//   }
-// });
 
 // exports.isLoggedIn = asyncWrap(async (req, res, next) => {
-//   if (!req.headers.cookie || !req.headers.cookie.startsWith("jwt")) {
-//     throw new AppError(403, "Please login");
-//   }
-
+//   if (!req.headers.cookie.startsWith("jwt"))
+//     return next(new AppError(403, "Please login"));
 //   const token = req.headers.cookie.split("=")[1];
+//   //const token = req.headers["authorization"];
+//   if (!token) return next(new AppError(401, "Please login"));
 
-//   try {
-//     const payload = decodeToken(token);
-//     const user = await User.findById(payload._doc.id);
-
-//     if (!user) {
-//       throw new AppError(403, "Please login");
-//     }
-
-//     req.user = user;
-//     next();
-//   } catch (error) {
-//     throw new AppError(401, "Please login");
-//   }
+//   const payload = decodeToken(token);
+//   const id = payload._doc.id;
+//   console.log(id);
+//   const UserModel = await UserModel.findById(id);
+//   if (!UserModel) return next(new AppError(403, "Please login"));
+//   req.UserModel = UserModel;
+//   console.log(req.UserModel);
+//   next();
 // });
 
-// exports.restrictTo = (...roles) => {
-//   return (req, res, next) => {
-//     if (!roles.includes(req.user.role)) {
-//       throw new AppError(403, "You do not have permission to perform this action");
-//     }
-//     next();
-//   };
-// };
 
-// exports.authNoPermistion = asyncWrap(async (req, res, next) => {
-//   let token = req.headers["authorization"];
-//   if (!token) {
-//     throw new AppError(401, "Please login");
-//   }
-
-//   token = token.split(" ")[1];
-//   try {
-//     const payload = decodeToken(token);
-//     res.locals.userId = payload._doc.id;
-//     next();
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// exports.forgotPassword = asyncWrap(async (req, res, next) => {
+// const forgotPassword = asyncWrap(async (req, res, next) => {
+//   //get user based on the posted email
 //   const { email } = req.body;
-//   const user = await User.findOne({ email });
+//   const UserModel = await UserModel.findOne({ email });
+//   //console.log(user);
+//   if (!user) return next(new AppError(401, "There is no user "));
 
-//   if (!user) {
-//     throw new AppError(401, "There is no user with this email address");
+//   ///generate reset token
+//   const resetToken = UserModel.createPasswordResetToken();
+//   console.log(resetToken);
+//   await UserModel.save({ validateBeforeSave: false });
+
+//   ///send to users email
+//   const resetURL = `${req.protocol}://${req.get(
+//     "host"
+//   )}/api/v1/users/resetPassword/${resetToken}`;
+
+//   const message = `Forgot your password? 
+//   Submit a patch request with a new password and
+//    password confirm to :${resetURL}  
+//     \n if you havent forgotten your password ignore this email`;
+//   try {
+//     //here we use the try  n catch because need do more then just sending the error to the user
+//     await sendEmail({
+//       email: UserModel.email,
+//       subject: "Your password reset link valid for 10 min",
+//       text: message,
+//     });
+//   } catch (err) {
+//     UserModel.passwordResetToken = undefined;
+//     UserModel.passwordResetExpires = undefined;
+//     await UserModel.save({ validateBeforeSave: false });
+//     return next(new AppError(500, err.message));
 //   }
 
+//   res.status(200).json({
+//     status: "success",
+//     message: "Reset link has been sent to the users email",
+//   });
+// });
+
+// const forgotPassword = asyncWrap(async (req, res, next) => {
+//   // Get user based on the posted email
+//   const { email } = req.body;
+//   const user = await UserModel.findOne({ email });
+
+//   // If the user does not exist, return an error
+//   if (!user) {
+//     return next(new AppError(401, "There is no user with this email"));
+//   }
+
+//   // Generate reset token
 //   const resetToken = user.createPasswordResetToken();
+//   console.log(resetToken);
+
+//   // Save the user with the new token and expiration date
 //   await user.save({ validateBeforeSave: false });
 
+//   // Send reset email to user
 //   const resetURL = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
 
-//   const message = `Forgot your password? Submit a patch request with a new password and password confirm to: ${resetURL} \nIf you haven't forgotten your password, ignore this email.`;
+//   const message = `Forgot your password? Submit a patch request with a new password and password confirm to: ${resetURL}\nIf you haven't forgotten your password, ignore this email.`;
 
 //   try {
 //     await sendEmail({
@@ -157,59 +138,23 @@ exports.authAdmin = (req,res,next) => {
 //       text: message,
 //     });
 //   } catch (err) {
+//     // If sending email fails, reset token and expiration
 //     user.passwordResetToken = undefined;
 //     user.passwordResetExpires = undefined;
 //     await user.save({ validateBeforeSave: false });
-//     throw new AppError(500, err.message);
+//     return next(new AppError(500, err.message));
 //   }
 
+//   // Send success response
 //   res.status(200).json({
 //     status: "success",
 //     message: "Reset link has been sent to the user's email",
 //   });
 // });
 
-// exports.resetPassword = asyncWrap(async (req, res, next) => {
-//   const { resetToken } = req.params;
-//   const encryptedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-//   const user = await User.findOne({
-//     passwordResetToken: encryptedResetToken,
-//     passwordResetExpires: { $gt: Date.now() },
-//   });
-
-//   if (!user) {
-//     throw new AppError(400, "Token is expired or wrong");
-//   }
-
-//   const { passwordConfirm, password } = req.body;
-//   user.password = password;
-//   user.passwordConfirm = passwordConfirm;
-//   user.passwordResetToken = undefined;
-//   user.passwordResetExpires = undefined;
-//   user.passwordChangedAt = Date.now();
-//   await user.save();
-
-//   const token = generateToken(user);
-
-//   res.cookie("jwt", token, {
-//     httpOnly: true,
-//     secure: true,
-//     maxAge: 1000 * 60 * 10,
-//   });
-
-//   res.send({ user, token });
-// });
-
-// // Add other functions as needed...
-
-// module.exports = {
-//   auth,
-//   authAdmin,
-//   isLoggedIn,
-//   restrictTo,
-//   authNoPermistion,
-//   forgotPassword,
-//   resetPassword,
-//   // Add other functions...
-// };
+module.exports = {
+  auth,
+  authAdmin,
+  // forgotPassword,
+}

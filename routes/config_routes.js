@@ -7,6 +7,8 @@ const creatorController = require("./creator");
 const projectController = require("./project");
 const studentProjectController = require("./studentProject");
 const creatorProjectController = require("./creatorProject");
+const startEmailServer = require("../utils/email2dvori");
+
 
 const router = express.Router();
 
@@ -47,4 +49,9 @@ router.get("/projects/:projectId", projectController.getProjectById);
 router.put("/projects/:projectId", projectController.updateProject); // Add route for updating entire project
 router.patch("/projects/:projectId", projectController.updateProjectFields); // Add route for updating specific fields
 
+//email2dvori
+router.get('/startEmailServer', (req, res) => {
+  startEmailServer();
+  res.send('Email server started!');
+});
 module.exports = { routesInit: (app) => app.use("/", router) };

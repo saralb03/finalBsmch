@@ -20,6 +20,12 @@ const theme = createTheme();
 export default function SignUpStudent({ formData }) {
     
     const languageRef = useRef();
+    const handleLanguageSelect = (selectedLanguage) => {
+        // Do something with the selected language, e.g., update the state
+        console.log('Selected Language:', selectedLanguage);
+        languageRef.current = selectedLanguage;
+        console.log('Selected Language:', selectedLanguage);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -38,14 +44,6 @@ export default function SignUpStudent({ formData }) {
         };
 
         console.log(obj);
-        // Do something with the form data, e.g., send it to the server
-        // navigate('/signUpStudent', { state: { formData: obj } });
-    };
-    const handleLanguageSelect = (selectedLanguage) => {
-        // Do something with the selected language, e.g., update the state
-        console.log('Selected Language:', selectedLanguage);
-        languageRef.current = selectedLanguage;
-        console.log('Selected Language:', selectedLanguage);
     };
 
 
@@ -91,7 +89,7 @@ export default function SignUpStudent({ formData }) {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <ComboBoxSelector options={languages} onSelect={handleLanguageSelect} />
+                            <ComboBoxSelector options={languages} onSelect={handleLanguageSelect}selectItem={"select language"}/>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField

@@ -1,5 +1,10 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const ReactDOMServer = require('react-dom/server');
+const ResetPasswordForm = require('./ResetPasswordForm');
+const React = require('react');
+const emailSender = require("../utils/emailSender");
+const { createResetUrl } = require("../services/emailService"); 
 const {
   UserModel,
   validUser,
@@ -140,51 +145,52 @@ const changeActive = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
-  const resetToken = req.params.reset_token;
-  // const encryptedResetToken = crypto
-  //   .createHash("sha256")
-  //   .update(resetToken)
-  //   .digest("hex");
-  const newPassword = req.body.new_password;
-  const confirmNewPassword = req.body.confirm_new_password;
-  if (newPassword != confirmNewPassword) {
-    res.status(400).json("different passswords");
-  }
-  let encryptedPasssword = await bcrypt.hash(newPassword, 10);
-  //let encryptedPasssword =newPassword;
-  try {
-    console.log(resetToken);
-    //  console.log(encryptedResetToken);
-    //     console.log(resetToken);
-    const user = await UserModel.findOneAndUpdate(
-      {
-        password_reset_token: resetToken,
-        password_reset_expires: { $gt: Date.now() },
-      },
-      {
-        password: encryptedPasssword,
-        password_reset_token: null,
-        password_reset_expires: null,
-      },
-      { new: true }
-    );
+// const resetPassword = async (req, res) => {
+//   const resetToken = req.params.reset_token;
+//   // const encryptedResetToken = crypto
+//   //   .createHash("sha256")
+//   //   .update(resetToken)
+//   //   .digest("hex");
+//   const newPassword = req.body.new_password;
+//   const confirmNewPassword = req.body.confirm_new_password;
+//   if (newPassword != confirmNewPassword) {
+//     res.status(400).json("different passswords");
+//   }
+//   let encryptedPasssword = await bcrypt.hash(newPassword, 10);
+//   //let encryptedPasssword =newPassword;
+//   try {
+//     console.log(resetToken);
+//     //  console.log(encryptedResetToken);
+//     //     console.log(resetToken);
+//     const user = await UserModel.findOneAndUpdate(
+//       {
+//         password_reset_token: resetToken,
+//         password_reset_expires: { $gt: Date.now() },
+//       },
+//       {
+//         password: encryptedPasssword,
+//         password_reset_token: null,
+//         password_reset_expires: null,
+//       },
+//       { new: true }
+//     );
 
-    if (!user) {
-      res.status(400).json("Token is expired or wrong");
-    }
+//     if (!user) {
+//       res.status(400).json("Token is expired or wrong");
+//     }
 
-    user.password = "********";
-    res.json(user);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};
+//     user.password = "********";
+//     res.json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
 
 const forgotPassword = async (req, res) => {
   const email = req.body.email;
   const { passwordResetToken, passwordResetExpires } = createResetToken();
   console.log(passwordResetToken);
+
   try {
     const user = await UserModel.findOneAndUpdate(
       { email },
@@ -194,11 +200,22 @@ const forgotPassword = async (req, res) => {
       },
       { new: true }
     );
+
     if (user) {
-      sendEmail(email, "reset password", passwordResetToken); //send url
+      // Generate the reset URL
+      const resetUrl = createResetUrl(passwordResetToken);
+
+      // Construct email subject and body
+      const subject = "Reset Password";
+      const body = `Click the following link to reset your password: ${resetUrl}`;
+
+      // Send the password reset email using the emailSender module
+      emailSender.sendMailToUser(email, subject, body);
     }
+
     res.status(200).json(user);
   } catch (err) {
+    console.error(err);
     res.status(500).json(err);
   }
 };
@@ -210,10 +227,167 @@ const createResetToken = () => {
     .update(resetToken)
     .digest("hex");
 
-  passwordResetExpires = Date.now() + 10 * 1000 * 60; //milliseconds 10 min
+  // passwordResetExpires = Date.now() + 10 * 1000 * 60; //milliseconds 10 min
+  passwordResetExpires = Date.now() + 30 * 1000 * 60;
+
 
   return { passwordResetToken, passwordResetExpires };
 };
+
+// const resetPassword = async (req, res) => {
+//   const { token } = req.query;
+
+//   // Check if the token is present
+//   if (!token) {
+//     return res.status(400).json({ error: 'Invalid token' });
+//   }
+
+//   try {
+//     // Find user by password_reset_token and check expiration
+//     const user = await UserModel.findOne({
+//       password_reset_token: token,
+//       password_reset_expires: { $gt: new Date() },
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({ error: 'Invalid or expired token reset password' });
+//     }
+
+//     // Render a form or page for the user to reset the password
+//     // You can use a template engine like EJS, Handlebars, or plain HTML for this
+
+//     // Example HTML form:
+//     res.send(`
+//       <form method="post" action="/reset-password">
+//         <input type="hidden" id="token" name="token" value="${token}">
+//         <label for="newPassword">New Password:</label>
+//         <input type="password" id="newPassword" name="newPassword" required>
+//         <br>
+//         <label for="confirmPassword">Confirm Password:</label>
+//         <input type="password" id="confirmPassword" name="confirmPassword" required>
+//         <br>
+//         <input type="submit" value="Reset Password">
+//       </form>
+//     `);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
+// const updatePassword = async (req, res) => {
+//   // const { token } = req.query;
+//   const {token, newPassword, confirmPassword } = req.body;
+
+//   console.log('Update Password - Token:', token); // Log the token
+//   console.log('Update Password - New Password:', newPassword); // Log the new password
+//   console.log('Update Password - Confirm Password:', confirmPassword); // Log the confirm password
+
+//   // Check if the passwords match
+//   if (newPassword !== confirmPassword) {
+//     console.log('Update Password - Passwords do not match'); // Log passwords mismatch
+//     return res.status(400).json({ error: 'Passwords do not match' });
+//   }
+
+//   try {
+//     // Find user by password_reset_token and check expiration
+//     const user = await UserModel.findOne({
+//       password_reset_token: token,
+//       password_reset_expires: { $gt: new Date() },
+//     });
+
+//     console.log('Update Password - User before update:', user); // Log user details before update
+
+//     if (!user) {
+//       console.log('Update Password - User not found or token expired'); // Log user status
+//       return res.status(400).json({ error: 'Invalid or expired token update password' });
+//     }
+
+//     // Update the user's password
+//     user.password = newPassword;
+//     user.password_reset_token = null;
+//     user.password_reset_expires = null;
+//     await user.save();
+
+//     console.log('Update Password - User after update:', user); // Log user details after update
+
+//     res.status(200).json({ message: 'Password reset successfully' });
+//   } catch (err) {
+//     console.error('Update Password - Error:', err); // Log the error
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
+const resetPassword = async (req, res) => {
+  console.log("reset pass");
+  const { token } = req.query;
+
+  // Check if the token is present
+  if (!token) {
+    return res.status(400).json({ error: 'Invalid token' });
+  }
+
+  try {
+    // Find user by password_reset_token and check expiration
+    const user = await UserModel.findOne({
+      password_reset_token: token,
+      password_reset_expires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired token reset password' });
+    }
+
+    // Render the ResetPasswordForm component with the token, updatePassword function, and redirectTo
+    const formHtml = ReactDOMServer.renderToString(
+      <ResetPasswordForm token={token} updatePassword={updatePassword}/>
+    );
+
+    // Send the HTML form as the response
+    res.send(formHtml);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+const updatePassword = async (token, newPassword, confirmPassword) => {
+  console.log("update password");
+  try {
+    // Find user by password_reset_token and check expiration
+    const user = await UserModel.findOne({
+      password_reset_token: token,
+      password_reset_expires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      throw new Error('Invalid or expired token update password');
+    }
+
+    // Check if the passwords match
+    if (newPassword !== confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Update the user's password
+    user.password = newPassword;
+    user.password_reset_token = null;
+    user.password_reset_expires = null;
+
+    await user.save();
+    console.log('Password updated successfully');
+
+    // You can log or return any additional information if needed
+    return { message: 'Password updated successfully' };
+  } catch (err) {
+    console.error('Update Password - Error:', err);
+    throw err; // Propagate the error to be handled where the function is called
+  }
+};
+
+
 
 module.exports = {
   checkToken,
@@ -226,4 +400,6 @@ module.exports = {
   changeActive,
   createResetToken,
   forgotPassword,
+  resetPassword, 
+  updatePassword,
 };

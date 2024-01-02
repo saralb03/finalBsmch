@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import { AppContext } from '../context/context'
-import SignUp from '../connect/signUp';
-import SignIn from "../connect/signIn";
-import ForgotPassword from "../connect/forgotPassword";
-// import SignUpStudent from "../connect/signUpStudent";
+import SignUp from '../forms/signUp';
+import SignIn from "../forms/signIn";
+import ForgotPassword from "../forms/forgotPassword";
+import ProjectProposal from "../forms/projectProposal";
 import Home from '../routes/home';
 
 export default function AppRoutes() {
@@ -26,11 +26,11 @@ export default function AppRoutes() {
                         <div>
                             <h2 className="m-0">My app</h2>
                             <Link to="/home" className="text-light text-decoration-none mx-3">Home</Link>
+                            <Link to="/projectProposal" className="text-light text-decoration-none mx-3">Project Proposal</Link>
                         </div>
                         <div>
                             <Link to="/signup" className="text-light text-decoration-none mx-3">Sign Up</Link>
                             <Link to="/signin" className="text-light text-decoration-none mx-3">Sign In</Link>
-                            {/* <Link to="/forgotpassword" className="text-light text-decoration-none mx-3">Forgot Password</Link> */}
                         </div>
                     </div>
                 </header>
@@ -40,7 +40,7 @@ export default function AppRoutes() {
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/forgotpassword" element={<ForgotPassword />} />
-                    {/* <Route path="/signupstudent" element={<SignUpStudent/>} />         */}
+                    <Route path="/projectProposal" element={<ProjectProposal />} />        
                 </Routes>
             </AppContext.Provider>
         </BrowserRouter>

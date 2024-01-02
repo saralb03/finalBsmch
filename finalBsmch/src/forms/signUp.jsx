@@ -34,6 +34,37 @@ function SignUp() {
     const [countries, setCountries] = useState([]);
     const [formData, setFormData] = useState(null);
     const [userType, setUserType] = useState(null);
+    const [image, setImage] = useState(null);
+    // const [allImage, setAllImage] = useState(null);
+
+    // useEffect(() => {
+    //     getImage();
+    // }, []);
+    // const submitImage = async (e) => {
+    //     e.preventDefault();
+
+    //     const formData = new FormData();
+    //     formData.append("image", image);
+
+    //     const result = await axios.post(
+    //         "http://localhost:3000/upload-image",
+    //         formData,
+    //         {
+    //             headers: { "Content-Type": "multipart/form-data" },
+    //         }
+    //     );
+    // };
+
+    // const onInputChange = (e) => {
+    //     console.log(e.target.files[0]);
+    //     setImage(e.target.files[0]);
+    // };
+
+    // const getImage = async () => {
+    //     const result = await axios.get("http://localhost:5000/get-image");
+    //     console.log(result);
+    //     setAllImage(result.data.data);
+    // };
 
     const handleUserTypeSelect = (type) => {
         setUserType(type);
@@ -176,9 +207,10 @@ function SignUp() {
                             </Grid>
                             <Grid item xs={12}>
                                 <UploadImageField onChange={(e) => console.log(e.target.files[0])} />
+                                {/* <TextField type="file" accept="image/*" id="img_url" onChange={onInputChange}></TextField> */}
                             </Grid>
                             <Grid item xs={12}>
-                                <ComboBoxSelector options={countries} onSelect={handleCountrySelect} />
+                                <ComboBoxSelector options={countries} onSelect={handleCountrySelect} selectItem={"select country"} />
                             </Grid>
                             {/* Add more fields as needed */}
                         </Grid>

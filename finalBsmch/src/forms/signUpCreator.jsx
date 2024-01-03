@@ -10,17 +10,19 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import ComboBoxSelector from '../newApi/comboBoxSelector';
+import { post } from '../api/appApi'
 
 const theme = createTheme();
 
 export default function SignUpCreator({ formData }) {
     const languageRef = useRef();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-
+        console.log(formData)
         let obj = {
+            ...formData,
             entrepreneurshipExperience: data.get('entrepreneurshipExperience'),
             professionalBackground: data.get('professionalBackground'),
             about: data.get('about'),
@@ -31,13 +33,12 @@ export default function SignUpCreator({ formData }) {
         console.log(obj);
         // Do something with the form data, e.g., send it to the server
         // navigate('/signUpStudent', { state: { formData: obj } });
-    };
-
-    const handleLanguageSelect = (selectedLanguage) => {
-        // Do something with the selected language, e.g., update the state
-        console.log('Selected Language:', selectedLanguage);
-        languageRef.current = selectedLanguage;
-        console.log('Selected Language:', selectedLanguage);
+        try {
+            const response = await post(obj, {}, 'creator');
+            console.log(response);
+          } catch (error) {
+            console.error(error);
+          }
     };
 
     return (

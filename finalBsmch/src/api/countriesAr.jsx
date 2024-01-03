@@ -1,4 +1,4 @@
-import { doApi } from './appApi';
+import { doApi } from './doApiFunc';
 
 export const fetchCountryNames = async () => {
     try {
@@ -11,5 +11,3 @@ export const fetchCountryNames = async () => {
         countries = [];
     }
 };
-
-

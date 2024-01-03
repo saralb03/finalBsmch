@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import { AppContext } from '../context/context'
 import SignUp from '../forms/signUp';
-import SignIn from "../forms/signIn";
+import LogIn from "../forms/login";
 import ForgotPassword from "../forms/forgotPassword";
 import ProjectProposal from "../forms/projectProposal";
-import Home from '../routes/home';
 
 export default function AppRoutes() {
     const [countriesAr, setCountriesAr] = useState([]);
@@ -25,20 +24,18 @@ export default function AppRoutes() {
                     <div className="container d-flex justify-content-between align-items-center">
                         <div>
                             <h2 className="m-0">My app</h2>
-                            <Link to="/home" className="text-light text-decoration-none mx-3">Home</Link>
                             <Link to="/projectProposal" className="text-light text-decoration-none mx-3">Project Proposal</Link>
                         </div>
                         <div>
                             <Link to="/signup" className="text-light text-decoration-none mx-3">Sign Up</Link>
-                            <Link to="/signin" className="text-light text-decoration-none mx-3">Sign In</Link>
+                            <Link to="/login" className="text-light text-decoration-none mx-3">Log In</Link>
                         </div>
                     </div>
                 </header>
 
                 <Routes>
-                    <Route path="/home" element={<Home/>} />
                     <Route path="/signup" element={<SignUp />} />
-                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/login" element={<LogIn/>} />
                     <Route path="/forgotpassword" element={<ForgotPassword />} />
                     <Route path="/projectProposal" element={<ProjectProposal />} />        
                 </Routes>

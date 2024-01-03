@@ -12,7 +12,12 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import {
+  API_URL, doApiMethodSignUpLogin,
+  TOKEN_NAME, TOKEN_ROLE,TOKEN_ID ,regEmail, regPassword
+} from '../services/service1';
+import {useState} from 'react';
+import { post } from '../api/appApi';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -28,7 +33,9 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+export default function LogIn() {
+
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -37,9 +44,38 @@ export default function SignIn() {
         email: data.get('email'),
         password: data.get('password')
     }
+    //call to database connection value will contain the token 
+
+    // window.localStorage.setItem(value);
+
     console.log(obj);
+    setIsSubmitted(true);
+    doApi(data);
     //signup(obj.email, obj.password);
   };
+  const doApi = async (_dataBody) => {
+    try {
+      const url = API_URL + '/users/login';
+      const { data } = await doApiMethodSignUpLogin(url, "POST", _dataBody);
+      console.log(data);
+      if (data.token) {
+        localStorage.setItem(TOKEN_ROLE, data.userRole);
+        localStorage.setItem(TOKEN_NAME, data.token);
+        localStorage.setItem(TOKEN_ID, data.id);
+        console.log(data);
+        if (data.userRole == "admin"||data.userRole == "superadmin") {
+          nav("/admin");
+        } else if (data.userRole == 'user') {
+          nav("/");
+        }
+      }
+
+    } catch (err) {
+
+      setIsSubmitted(false);
+      alert(err.response.data.msg);
+    }
+  }
 
   return (
     <ThemeProvider theme={defaultTheme} >
@@ -95,7 +131,7 @@ export default function SignIn() {
                 <LockOutlinedIcon />
               </Avatar>
               <Typography component="h1" variant="h5">
-                Sign in
+                Log in
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
                 <TextField
@@ -128,7 +164,7 @@ export default function SignIn() {
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  Sign In
+                  Log In
                 </Button>
                 <Grid container>
                   <Grid item xs>

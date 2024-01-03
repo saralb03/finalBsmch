@@ -13,8 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import proffesions from "../json/proffesions";
 // import projects from "../json/projects";
 import allJson from "../json/alljson";
-import ComboBoxSelector from '../newApi/comboBoxSelector';
-import CheckboxSelector from "../newApi/checkBoxSelector";
+import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
+import CheckboxSelector from "../comps_stracture/checkBoxSelector";
 
 const theme = createTheme();
 

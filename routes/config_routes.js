@@ -7,7 +7,6 @@ const creatorController = require("./creator");
 const projectController = require("./project");
 const studentProjectController = require("./studentProject");
 const creatorProjectController = require("./creatorProject");
-const startEmailServer = require("../utils/email2dvori");
 
 
 const router = express.Router();
@@ -26,6 +25,11 @@ router.post("/login", userController.login);
 router.patch("/changeRole/:userID", authAdmin, userController.changeRole);
 router.patch("/changeActive/:userID", authAdmin, userController.changeActive);
 router.post("/forgotPassword", userController.forgotPassword);
+// Route for resetting the password
+router.get('/reset-password', userController.resetPassword);
+
+// Route for updating the password
+router.post('/reset-password', userController.updatePassword);
 
 
 router.post("/student", studentController.createStudent);
@@ -49,9 +53,5 @@ router.get("/projects/:projectId", projectController.getProjectById);
 router.put("/projects/:projectId", projectController.updateProject); // Add route for updating entire project
 router.patch("/projects/:projectId", projectController.updateProjectFields); // Add route for updating specific fields
 
-//email2dvori
-router.get('/startEmailServer', (req, res) => {
-  startEmailServer();
-  res.send('Email server started!');
-});
+
 module.exports = { routesInit: (app) => app.use("/", router) };

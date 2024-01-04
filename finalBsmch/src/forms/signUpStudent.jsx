@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -9,43 +10,48 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '@mui/material/Link';
-import languages from '../json/languages';
-import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
 import { post } from '../api/appApi';
+import Chip from '@mui/material/Chip';
 
 const theme = createTheme();
 
 export default function SignUpStudent({ formData }) {
-  const languageRef = useRef();
+  const [experience, setExperience] = useState('');
+  const [experiences, setExperiences] = useState([]);
 
-  const handleLanguageSelect = (selectedLanguage) => {
-    // Update the ref with the selected language
-    languageRef.current = selectedLanguage;
-    console.log('Selected Language:', selectedLanguage);
+  const handleAddExperience = () => {
+    if (experience.trim() !== '') {
+      setExperiences((prevExperiences) => [...prevExperiences, experience]);
+      setExperience('');
+    }
+  };
+
+  const handleRemoveExperience = (index) => {
+    setExperiences((prevExperiences) =>
+      prevExperiences.filter((_, i) => i !== index)
+    );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log(formData)
     // Create an object with form data
     const obj = {
       ...formData,
       institution: data.get('institution'),
-      programmingEducation: data.get('programmingEducation'),
       linkedin: data.get('linkedin'),
-      languages: languageRef.current,
-      experience: data.get('experience'),
-      interests: data.get('interests'),
+      experience:experiences,
       about: data.get('about'),
     };
-    console.log(obj)
+    console.log(obj);
+
     // Use try-catch for asynchronous operations
     try {
       const response = await post(obj, {}, 'student');
       console.log(response);
     } catch (error) {
       console.error(error);
+      alert(error.message);
     }
   };
 
@@ -62,15 +68,25 @@ export default function SignUpStudent({ formData }) {
           Sign up Student
         </Typography>
         <form noValidate onSubmit={handleSubmit}>
+          <Grid item xs={12} marginBottom={2}>
+            <Typography variant="h6" gutterBottom>
+              About Me
+            </Typography>
+            <TextField
+              required
+              fullWidth
+              name="about"
+              label="Tell us about yourself..."
+              id="about"
+              multiline
+              rows={3}
+            />
+          </Grid>
           <Grid container spacing={2}>
-            {/* Use a map function to avoid code duplication for similar form fields */}
             {[
               { label: 'Institution', name: 'institution' },
-              { label: 'Programming Education', name: 'programmingEducation' },
               { label: 'LinkedIn', name: 'linkedin' },
-              { label: 'Experience', name: 'experience' },
-              { label: 'Interests', name: 'interests' },
-              { label: 'About Me', name: 'about' },
+              { label: 'GitHub', name: 'GitHub' },
             ].map((field) => (
               <Grid item xs={12} key={field.name}>
                 <TextField
@@ -83,8 +99,38 @@ export default function SignUpStudent({ formData }) {
               </Grid>
             ))}
             <Grid item xs={12}>
-              {/* Use a consistent naming convention for components */}
-              <ComboBoxSelector options={languages} onSelect={handleLanguageSelect} selectItem="Select Language" />
+              <Typography variant="h6" gutterBottom>
+                Experience
+              </Typography>
+              <Grid container spacing={1} alignItems="center">
+                <Grid item xs={8}>
+                  <TextField
+                    fullWidth
+                    label="Add Experience"
+                    variant="outlined"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddExperience}
+                  >
+                    Add
+                  </Button>
+                </Grid>
+                {experiences.map((exp, index) => (
+                  <Grid item key={index}>
+                    <Chip
+                      label={exp}
+                      onDelete={() => handleRemoveExperience(index)}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
           </Grid>
           <Button

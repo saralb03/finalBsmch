@@ -36,12 +36,45 @@
 // export default ComboBoxSelector
 
 
+// import React, { useState } from 'react';
+// import Grid from '@mui/material/Grid';
+// import Autocomplete from '@mui/material/Autocomplete';
+// import TextField from '@mui/material/TextField';
+
+// const ComboBoxSelector = ({ options, onSelect, selectItem }) => {
+//   const [selectedOption, setSelectedOption] = useState(null);
+
+//   const handleSelectChange = (event, newValue) => {
+//     const value = event.target.value;
+//     setSelectedOption(newValue);
+//     onSelect(newValue); // Notify parent component of the selected option if needed
+//   };
+
+//   return (
+//     <Grid container spacing={2}>
+//       <Grid item xs={12}>
+//         <Autocomplete
+//           value={selectedOption}
+//           onChange={handleSelectChange}
+//           options={options}
+//           getOptionLabel={(option) => option}
+//           renderInput={(params) => (
+//             <TextField {...params} label={selectItem} fullWidth />
+//           )}
+//         />
+//       </Grid>
+//     </Grid>
+//   );
+// };
+
+// export default ComboBoxSelector;
+
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
-const ComboBoxSelector = ({ options, onSelect, selectItem }) => {
+const ComboBoxSelector = ({ options, onSelect, selectItem, error }) => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const handleSelectChange = (event, newValue) => {
@@ -59,7 +92,13 @@ const ComboBoxSelector = ({ options, onSelect, selectItem }) => {
           options={options}
           getOptionLabel={(option) => option}
           renderInput={(params) => (
-            <TextField {...params} label={selectItem} fullWidth />
+            <TextField
+              {...params}
+              label={selectItem}
+              fullWidth
+              error={error}
+              helperText={error ? 'This field is required' : ''}
+            />
           )}
         />
       </Grid>
@@ -68,4 +107,3 @@ const ComboBoxSelector = ({ options, onSelect, selectItem }) => {
 };
 
 export default ComboBoxSelector;
-

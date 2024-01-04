@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '@mui/material/Link';
-import ComboBoxSelector from '../newApi/comboBoxSelector';
+import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
 import { post } from '../api/appApi'
 
 const theme = createTheme();

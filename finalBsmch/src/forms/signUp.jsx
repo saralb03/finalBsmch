@@ -12,8 +12,8 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import SignUpStudent from "./SignUpStudent";
 import SignUpCreator from "./SignUpCreator";
-import { fetchCountryNames } from "../newApi/countriesAr";
-import ComboBoxSelector from '../newApi/comboBoxSelector';
+import { fetchCountryNames } from "../api/countriesAr";
+import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
 
 // Modify UploadImageField to use forwardRef
 const UploadImageField = React.forwardRef(({ onChange }, ref) => {

@@ -3,8 +3,10 @@ const { ProjectModel } = require("./projectModel");
 
 const studentProjectSchema = new mongoose.Schema({
   projectSize: { type: String, required: true },
-  specificDevelopmentStyle: { type: String, required: true },
-  // Add other fields specific to student projects
+  academicLevel: { type: String, required: true }, 
+  mentorshipRequired: { type: Boolean, default: false }, // Indicates if mentorship is required for the student project
+  developmentTools: { type:[String]},
+  interests: { type: String }, 
 });
 
 const StudentProjectModel = ProjectModel.discriminator("studentProjects", studentProjectSchema);

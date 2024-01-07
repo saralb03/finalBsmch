@@ -17,6 +17,23 @@ const createStudent = async (req, res) => {
   }
 };
 
+const getStudentById = async (req, res) => {
+  try {
+    const studentId = req.params.studentId; 
+    const student = await StudentModel.findById(studentId);
+    
+    if (!student) {
+      return res.json({ msg: "Student not found" });
+    }
+    
+    res.json({ student });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error getting student", err });
+  }
+};
+
 module.exports = {
-  createStudent
+  createStudent,
+  getStudentById
 };

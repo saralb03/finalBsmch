@@ -32,7 +32,6 @@ const getProjects = async (req, res) => {
       if (projects.length === 0) {
         return res.json({ msg: "You have no projects yet." });
       }
-      
       res.json(projects);
     } catch (err) {
       console.log(err);

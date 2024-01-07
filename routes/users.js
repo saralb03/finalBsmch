@@ -419,6 +419,23 @@ const updatePassword = async (token, newPassword, confirmPassword) => {
     throw err; // Propagate the error to be handled where the function is called
   }
 };
+const getUserById = async (req, res) => {
+  try {
+    const userId = req.params.userId; 
+    const user = await UserModel.findById(userId);
+    
+    if (!user) {
+      return res.json({ msg: "User not found" });
+    }
+    
+    res.json({ user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error getting user", err });
+  }
+};
+
+
 
 
 
@@ -437,4 +454,5 @@ module.exports = {
   forgotPassword,
   resetPassword, 
   updatePassword,
+  getUserById
 };

@@ -45,12 +45,12 @@ let userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 99,
   },
-  // img_url: {
-  //   type: String,
-  //   minlength: 2,
-  //   maxlength: 99,
-  //   default: null,
-  // },
+  img_url: {
+    type: String,
+    minlength: 2,
+    maxlength: 99,
+    default: null,
+  },
   date_created: {
     type: Date,
     default: Date.now(),

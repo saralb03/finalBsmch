@@ -29,9 +29,10 @@ router.patch("/changeActive/:userID", authAdmin, userController.changeActive);
 router.post("/forgotPassword", userController.forgotPassword);
 // Route for resetting the password
 router.get('/reset-password', userController.resetPassword);
+router.get('/reset-password', userController.resetPassword);
 
 // Route for updating the password
-router.post('/reset-password', userController.updatePassword);
+router.get('/getUserById/:userId', userController.getUserById);
 
 
 router.post("/student", studentController.createStudent);
@@ -61,5 +62,11 @@ router.post("/addmsg/:userId", auth.auth ,messageController.addMessage);
 router.post("/getmsg/:userId", auth.auth,messageController.getMessages);
 // router.post("/addmsg", messageController.addMessage);
 // router.post("/getmsg",messageController.getMessages);
+
+//students
+router.get('/getStudentById/:studentId', studentController.getStudentById);
+
+//creator
+router.get('/getCreatorById/:creatorId', creatorController.getCreatorById);
 
 module.exports = { routesInit: (app) => app.use("/", router) };

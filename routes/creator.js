@@ -32,7 +32,24 @@ const createCreator = async (req, res) => {
     res.status(500).json({ msg: "Error saving creator", err });
   }
 };
+const getCreatorById = async (req, res) => {
+  try {
+    const creatorId = req.params.creatorId; 
+    const creator = await CreatorModel.findById(creatorId);
+    
+    if (!creator) {
+      return res.json({ msg: "Creator not found" });
+    }
+    
+    res.json({ creator });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error getting creator", err });
+  }
+};
+
 
 module.exports = {
-  createCreator
+  createCreator,
+  getCreatorById
 };

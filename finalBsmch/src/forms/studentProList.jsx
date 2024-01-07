@@ -6,10 +6,12 @@ import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Link as RouterLink } from 'react-router-dom';
-import StudentInfo from  './studentInfo'
+import StudentInfo from './studentInfo'
+import { useNavigate } from 'react-router-dom';
 
 const StudentProList = () => {
     const [projects, setProjects] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -63,43 +65,22 @@ const StudentProList = () => {
                                     </Typography>
                                     <Typography variant="body1">{project.duration}</Typography>
                                 </div>
-                                <div>
-                                    <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
-                                        Proposed By:
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {project.proposedByData ? (
-                                            <RouterLink
-                                                to={{
-                                                    pathname: `/studentInfo/${project.proposedByData?._id}`,
-                                                    // pathname: `./studentInfo`,
-                                                    state: { userData: project.proposedByData },
-                                                }}
-                                                color="inherit"
-                                                style={{ textDecoration: 'none' }}
-                                            >
-                                                {`${project.proposedByData?.firstName} ${project.proposedByData?.lastName}`}
-                                            </RouterLink>
-                                        ) : (
-                                            'Not specified'
-                                        )}
-                                    </Typography>
-            
+                                <div style={{ fontWeight: 'bold', marginLeft: '10px' }}>
+                                    Proposed By:
                                 </div>
-                                {/* <div>
-                                    <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
-                                        Proposed By:
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        {project.proposedByData ? (
-                                            // Include StudentInfo as a component here
-                                            <StudentInfo studentData={project.proposedByData} />
-                                        ) : (
-                                            'Not specified'
-                                        )}
-                                    </Typography>
-                                </div> */}
-                                {/* Add additional project details as needed */}
+                                <button
+                                    onClick={() => {
+                                        navigate('/studentInfo', { state: { userData: project.proposedByData } });
+                                    }}
+                                    className="btn mx-2"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    {project.proposedByData
+                                        ? `${project.proposedByData?.firstName} ${project.proposedByData?.lastName}`
+                                        : 'Not specified'}
+                                </button>
+
+                             
                             </CardContent>
                         </Card>
                     </ListItem>

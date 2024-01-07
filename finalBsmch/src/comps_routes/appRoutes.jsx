@@ -8,10 +8,19 @@ import ProjectProposal from "../forms/projectProposal";
 import CreatorProjectProposel from "../forms/creatorProjectProposel";
 import CreatorProList from "../forms/creatorProList";
 import StudentProList from "../forms/studentProList";
-import StudentInfo from '../forms/studentInfo';
+import StudentInfo from "../forms/studentInfo";
+import CreatorInfo from "../forms/creatorInfo";
+import StudentProjectProposal from "../forms/studentProjectProposel";
+import CreatorProjectProposal from "../forms/creatorProjectProposel";
+
 
 
 export default function AppRoutes() {
+
+    const handleLogout = () => {
+        localStorage.clear();
+      };
+
     const [countriesAr, setCountriesAr] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(" ");
 
@@ -30,13 +39,14 @@ export default function AppRoutes() {
                         <div>
                             <h2 className="m-0">My app</h2>
                             <Link to="/projectProposal" className="text-light text-decoration-none mx-3">Project Proposal</Link>
-                            <Link to="/creatorProjectProposel" className="text-light text-decoration-none mx-3">Creator Project Proposal</Link>
                             <Link to="/creatorProList" className="text-light text-decoration-none mx-3">Creator Project List</Link>
+                            {/* <Link to="/creatorProjectProposel" className="text-light text-decoration-none mx-3">Creator Project Proposel</Link> */}
                             <Link to="/studentProList" className="text-light text-decoration-none mx-3">Student Project List</Link>
                         </div>
                         <div>
                             <Link to="/signup" className="text-light text-decoration-none mx-3">Sign Up</Link>
                             <Link to="/login" className="text-light text-decoration-none mx-3">Log In</Link>
+                            <button onClick={handleLogout}>Log Out</button>
                         </div>
                     </div>
                 </header>
@@ -48,8 +58,11 @@ export default function AppRoutes() {
                     <Route path="/projectProposal" element={<ProjectProposal />} />   
                     <Route path="/creatorProjectProposel" element={<CreatorProjectProposel/>} />   
                     <Route path="/creatorProList" element={<CreatorProList/>} />       
-                    <Route path="/studentProList" element={<StudentProList/>} />    
-                    <Route path="/studentInfo/:id" component={<StudentInfo/>} />  
+                    <Route path="/studentProList" element={<StudentProList/>} />   
+                    <Route path="/studentInfo" element={<StudentInfo/>} />    
+                    <Route path="/creatorInfo" element={<CreatorInfo/>} />    
+                    <Route path="/studentProjectProposel" element={<StudentProjectProposal/>} />    
+                    <Route path="/creatorProjectProposel" element={<CreatorProjectProposal/>} />    
                 </Routes>
             </AppContext.Provider>
         </BrowserRouter>

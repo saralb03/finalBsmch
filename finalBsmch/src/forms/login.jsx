@@ -14,10 +14,14 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   API_URL, doApiMethodSignUpLogin,
-  TOKEN_NAME, TOKEN_ROLE,TOKEN_ID ,regEmail, regPassword
+  TOKEN_NAME, TOKEN_ROLE, TOKEN_ID, regEmail, regPassword
 } from '../services/service1';
-import {useState} from 'react';
+import { useState } from 'react';
 import { post } from '../api/appApi';
+import { apiService } from '../api/apiService';
+
+
+
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -34,38 +38,109 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function LogIn() {
+  const { postData } = apiService();
+  const { getAuthenticatedData } = apiService();
 
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let obj = {
-        email: data.get('email'),
-        password: data.get('password')
+      email: data.get('email'),
+      password: data.get('password')
     }
     try {
-      const response = await post(obj, {}, 'login');
-      console.log(response);
-      const token = response.data;
+      const response1 = await postData('login', obj);
+      const token = response1.token;
       console.log(token);
       window.localStorage.setItem('token', token);
+      const response2 = await getAuthenticatedData('myInfo', token);
+      console.log(response2);
+
+      const role = response2.role;
+      const _id = response2._id;
+      const firstName = response2.firstName;
+      const lastName = response2.lastName;
+      const email = response2.email;
+      const phone = response2.phone;
+      const birthDate = response2.birth_date;
+      const imgUrl = response2.img_url;
+      const location = response2.location;
+      const dateCreated = response2.date_created;
+      const user = response2.__t;
+      window.localStorage.setItem('token', token);
+      window.localStorage.setItem('role', role);
+      window.localStorage.setItem('_id', _id);
+      window.localStorage.setItem('firstName', firstName);
+      window.localStorage.setItem('lastName', lastName);
+      window.localStorage.setItem('email', email);
+      window.localStorage.setItem('phone', phone);
+      window.localStorage.setItem('birthDate', birthDate);
+      window.localStorage.setItem('imgUrl', imgUrl);
+      window.localStorage.setItem('location', location);
+      window.localStorage.setItem('dateCreated', dateCreated);
+
+      if (user ==='students') {
+
+        const institution = response2.institution;
+        const linkedin = response2.linkedin;
+        const experience = response2.experience;
+        const about = response2.about;
+        const github = response2.github;
+        window.localStorage.setItem('institution', institution);
+        window.localStorage.setItem('linkedin', linkedin);
+        window.localStorage.setItem('experience', experience);
+        window.localStorage.setItem('about', about);
+        window.localStorage.setItem('github', github);
+        window.localStorage.setItem('user','student');
+      }
+      else if (user ==='creators') {
+        const entrepreneurshipExperience = response2.entrepreneurshipExperience;
+        const professionalBackground = response2.professionalBackground;
+        const about = response2.about;
+        const linkedin = response2.linkedin;
+        const portfolio = response2.portfolio;
+        window.localStorage.setItem('entrepreneurshipExperience', entrepreneurshipExperience);
+        window.localStorage.setItem('professionalBackground', professionalBackground);
+        window.localStorage.setItem('about', about);
+        window.localStorage.setItem('linkedin', linkedin);
+        window.localStorage.setItem('portfolio', portfolio);
+        window.localStorage.setItem('user','creator');
+
+      }
+      else{
+        window.localStorage.setItem('user','user');
+      }
+
+
+      // Add more constants as needed
+
+
+      window.localStorage.setItem('role', role);
+      window.localStorage.setItem('_id', _id);
+
+
+
+
     } catch (error) {
       console.error(error);
       alert(error.message);
     }
+
+
   };
   const doApi = async (_dataBody) => {
     try {
-      const url = API_URL + '/users/login';
-      const { data } = await doApiMethodSignUpLogin(url, "POST", _dataBody);
+      const url = API_URL + '/login';
+      const { data } = await post(url);
       console.log(data);
       if (data.token) {
         localStorage.setItem(TOKEN_ROLE, data.userRole);
         localStorage.setItem(TOKEN_NAME, data.token);
         localStorage.setItem(TOKEN_ID, data.id);
         console.log(data);
-        if (data.userRole == "admin"||data.userRole == "superadmin") {
+        if (data.userRole == "admin" || data.userRole == "superadmin") {
           nav("/admin");
         } else if (data.userRole == 'user') {
           nav("/");
@@ -85,14 +160,14 @@ export default function LogIn() {
       <Box
         sx={{
           height: '100vh',
-          width:'100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Grid container component="main" sx={{ height: '100%', width:'100%'}}>
+        <Grid container component="main" sx={{ height: '100%', width: '100%' }}>
           {/* Left Section - Image */}
           <Grid
             item

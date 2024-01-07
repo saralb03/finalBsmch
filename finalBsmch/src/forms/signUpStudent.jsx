@@ -42,6 +42,7 @@ export default function SignUpStudent({ formData }) {
       linkedin: data.get('linkedin'),
       experience:experiences,
       about: data.get('about'),
+      github: data.get('github')
     };
     console.log(obj);
 

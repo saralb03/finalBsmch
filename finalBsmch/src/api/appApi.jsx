@@ -2,13 +2,13 @@ import axios from 'axios';
 const BACKEND_URL = "http://localhost:3001";
 
 export const post = async (body, headers, route) => {
-  console.log(body);
+  // console.log(body);
   console.log("headers:" + headers);
-  console.log(route);
+  // console.log(route);
   try {
     const response = await axios.post(`${BACKEND_URL}/${route}`, body, { headers: headers });
     const data = response.data;
-    console.log(data);
+    // console.log(data);
   }
   catch (error) {
     console.error("Error fetching data:", error);

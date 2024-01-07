@@ -15,6 +15,8 @@ import ComboBoxSelector from "../comps_stracture/comboBoxSelector";
 import workEnvironment from "../json/work";
 import Chip from "@mui/material/Chip";
 import { post } from '../api/appApi';
+import { apiService } from '../api/apiService';
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -32,6 +34,8 @@ function ProjectProposal() {
   const [teamSize, setTeamSize] = useState("");
   const [active, setActive] = useState(false);
   const [errors, setErrors] = useState({});
+  const {postData} = apiService();
+  const navigate = useNavigate();
 
   const handleAddStyle = () => {
     if (style.trim() !== "") {
@@ -58,6 +62,7 @@ function ProjectProposal() {
 
   const submitForm = async() => {
     const currentDate = new Date();
+    const _id = localStorage.getItem('_id');
     const obj = {
       title,
       description,
@@ -69,7 +74,7 @@ function ProjectProposal() {
       teamSize: parseInt(teamSize, 10),
       dateCreated: currentDate,
       active,
-      createdBy:"admin"
+      createdBy:_id
     };
 
     const validationErrors = validate(obj);
@@ -78,13 +83,17 @@ function ProjectProposal() {
       console.log(obj);
       setFormData(obj);
     }
-    try {
-      const response = await post(obj, {}, 'projects');
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
+
+    const user = window.localStorage.getItem('user');
+    if(user ==="student")
+    {
+      navigate('/studentProjectProposel', { state: { projectData: obj } })
     }
+    else if(user ==="creator")
+    {
+      navigate('/creatorProjectProposel', { state: { projectData: obj } })
+    }
+
   };
 
   const validate = (values) => {
@@ -294,7 +303,7 @@ function ProjectProposal() {
                 onClick={submitForm}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Submit Proposal
+                Continue
               </Button>
             </Grid>
             <Grid item xs={12}>
@@ -318,14 +327,6 @@ function ProjectProposal() {
           </Box>
         </Box>
       </Container>
-      {/* {formData && (
-        <Box mt={4}>
-          <Typography variant="h6" align="center">
-            Submitted Proposal:
-          </Typography>
-          <pre>{JSON.stringify(formData, null, 2)}</pre>
-        </Box>
-      )} */}
     </ThemeProvider>
   );
 }

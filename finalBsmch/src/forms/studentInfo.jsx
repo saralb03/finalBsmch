@@ -5,8 +5,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
+import { useLocation } from 'react-router-dom';
 
-const StudentInfo = ({studentData}) => {
+
+const StudentInfo = () => {
+  const locatio = useLocation();
+  const { userData: studentData } = locatio.state || {};
   const {
     institution,
     programmingEducation,
@@ -29,9 +33,9 @@ const StudentInfo = ({studentData}) => {
   } = studentData;
 
   return (
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: '16px', marginTop: '70px' }}>
       <Typography variant="h4" gutterBottom>
-        {`${firstName} ${lastName}'s Resume`}
+        {`${firstName} ${lastName}'s profile`}
       </Typography>
       <List>
         <ListItem>
@@ -112,13 +116,15 @@ const StudentInfo = ({studentData}) => {
           <ListItemText primary="Location" secondary={location || 'Not specified'} />
         </ListItem>
         <ListItem>
-          <ListItemText primary="Image URL" secondary={img_url || 'Not specified'} />
+          <img
+            src={img_url || ' '}  // Use the path to a default image if img_url is not specified
+            alt="User"
+            style={{ maxWidth: '100%', maxHeight: '200px', marginTop: '8px' }}
+          />
         </ListItem>
+
         <ListItem>
           <ListItemText primary="Date Created" secondary={date_created || 'Not specified'} />
-        </ListItem>
-        <ListItem>
-          <ListItemText primary="Role" secondary={role || 'Not specified'} />
         </ListItem>
         <ListItem>
           <ListItemText primary="Active" secondary={active ? 'Yes' : 'No'} />

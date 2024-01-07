@@ -11,6 +11,38 @@ const {
   validLogin,
   createToken,
 } = require("../models/userModel");
+//img
+const multer = require('multer');
+const path = require('path');
+
+
+//img
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Specify the destination folder for file uploads
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+// Initialize upload
+const upload = multer({
+  storage: storage
+});
+
+const uploadImage = (req, res, next) => {
+  // Use 'img_url' as the field name where your image file is attached
+  upload.single('img_url')(req, res, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ msg: "Error uploading image", err });
+    }
+    // If there's no error, continue to the next middleware/controller
+    next();
+  });
+};
+//end img
 
 const checkToken = async (req, res) => {
   res.json(req.tokenData);
@@ -50,13 +82,13 @@ const count = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  // let validBody = validUser(req.body);
-  let validBody = req.body;
-  if (validBody.error) {
-    return res.status(400).json(validBody.error.details);
-  }
+  const img_url = req.file ? req.file.path : null;
   try {
-    let user = new UserModel(req.body);
+    console.log(req.body);
+    let user = new UserModel({
+      ...req.body,
+      img_url: img_url,
+    });
     user.password = await bcrypt.hash(user.password, 10);
     user.birth_date = Date.parse(user.birth_date);
     await user.save();
@@ -66,12 +98,13 @@ const createUser = async (req, res) => {
     if (err.code == 11000) {
       return res
         .status(500)
-        .json({ msg: "Email already in system, try log in", code: 11000 });
+        .json({ msg: "Email already in the system, try logging in", code: 11000 });
     }
     console.log(err);
     res.status(500).json({ msg: "err", err });
   }
 };
+
 
 const login = async (req, res) => {
   let validBody = validLogin(req.body);
@@ -390,6 +423,8 @@ const updatePassword = async (token, newPassword, confirmPassword) => {
 
 
 module.exports = {
+  // createUser: [uploadImage, createUser],
+  uploadImage,
   checkToken,
   myInfo,
   usersList,

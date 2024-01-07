@@ -7,6 +7,8 @@ const creatorController = require("./creator");
 const projectController = require("./project");
 const studentProjectController = require("./studentProject");
 const creatorProjectController = require("./creatorProject");
+const messageController = require("./message");
+// const { addMessage, getMessages } = require("./message");
 
 
 const router = express.Router();
@@ -53,5 +55,11 @@ router.get("/projects/:projectId", projectController.getProjectById);
 router.put("/projects/:projectId", projectController.updateProject); // Add route for updating entire project
 router.patch("/projects/:projectId", projectController.updateProjectFields); // Add route for updating specific fields
 
+//message
+
+router.post("/addmsg/:userId", auth.auth ,messageController.addMessage);
+router.post("/getmsg/:userId", auth.auth,messageController.getMessages);
+// router.post("/addmsg", messageController.addMessage);
+// router.post("/getmsg",messageController.getMessages);
 
 module.exports = { routesInit: (app) => app.use("/", router) };

@@ -46,9 +46,9 @@ const handleImageChange = async (e,imgRef) => {
         // imgRef.current = imageUrl;
         // console.log(imageUrl);
         // console.log(imgRef.current);
-        imgRef.current = String(imageUrl);
-        console.log(imageUrl);
-        console.log(imgRef.current);
+        imgRef.current = imageUrl;
+        console.log("image orogine:"+imageUrl);
+        console.log("image ref:"+imgRef.current);
       } catch (error) {
         console.error('Error uploading image to Cloudinary:', error);
       }
@@ -354,8 +354,8 @@ function SignUp() {
                         </Grid>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="./signin" variant="body2">
-                                    Already have an account? Sign in
+                                <Link href="./login" variant="body2">
+                                    Already have an account? Log in
                                 </Link>
                             </Grid>
                         </Grid>

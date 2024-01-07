@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -11,92 +11,118 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import proffesions from "../json/proffesions";
-// import projects from "../json/projects";
-import allJson from "../json/alljson";
-import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
-import CheckboxSelector from "../comps_stracture/checkBoxSelector";
+import ComboBoxSelector from "../comps_stracture/comboBoxSelector";
+import workEnvironment from "../json/work";
+import Chip from "@mui/material/Chip";
+import { post } from '../api/appApi';
 
 const theme = createTheme();
 
 function ProjectProposal() {
-
   const [formData, setFormData] = useState(null);
   const [rolled, setRolled] = useState(false);
-  const titleRef = useRef();
-  const descriptionRef = useRef();
-  const durationRef = useRef();
-  const professionRef = useRef();
-  const projectRef = useRef();
-  const languagesRef = useRef();
-  const toolsRef = useRef();
-  const skillsRequiredRef = useRef();
-  const flexibleRef = useRef();
-  const fieldOfWorkRef = useRef();
-  const workEnvironmentRef = useRef();
-  const requiredLanguagesRef = useRef();
-  const styleRef = useRef();
-
-  const [projectsAr, setProjectsAr] = useState([]);
-  const [languagesAr, setLanguagesAr] = useState([]);
-  const [toolsAr, setToolsAr] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [duration, setDuration] = useState("");
   const [selectedProfession, setSelectedProfession] = useState("");
+  const [selectedFlexibility, setSelectedFlexibility] = useState("");
+  const [selectedWorkEnvironments, setSelectedWorkEnvironments] = useState("");
+  const [style, setStyle] = useState(" ");
+  const [styles, setStyles] = useState([]);
+  const [teamSize, setTeamSize] = useState("");
+  const [active, setActive] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const handleAddStyle = () => {
+    if (style.trim() !== "") {
+      setStyles((prevStyles) => [...prevStyles, style]);
+      setStyle("");
+    }
+  };
+
+  const handleRemoveStyle = (index) => {
+    setStyles((prevStyles) => prevStyles.filter((_, i) => i !== index));
+  };
 
   const handleProfessionSelect = (selectedProfessionName) => {
-    console.log('Selected profession:', selectedProfessionName);
     setSelectedProfession(selectedProfessionName);
-    const selectedProfession = allJson.find((profession) => profession.name === selectedProfessionName);
-    if (selectedProfession) {
-      // Access other fields of the selected profession
-      const optionalProjects = selectedProfession.optionalProjects;
-      const optionalLanguages = selectedProfession.optionalLanguages;
-      const environmentsOfWork = selectedProfession.environmentsOfWork;
-      setProjectsAr(optionalProjects);
-      setLanguagesAr(optionalLanguages);
-      setToolsAr(environmentsOfWork);
-    }
-    // const filteredProjects = projects.filter((project) =>
-    //   Object.keys(project).includes(selectedProfessionName)
-    // );
-    // setProjectsAr(filteredProjects[0][selectedProfession]);
-    professionRef.current = selectedProfession;
-  };
-  const handleProjectSelect = (selectedProject) => {
-    console.log('Selected project:', selectedProject);
-    projectRef.current = selectedProject;
   };
 
-  const handleLanguagesSelect = (selectedLanguage) => {
-    console.log('Selected language:', selectedLanguage);
-    languagesRef.current = selectedLanguage;
+  const handleFlexibilitySelect = (selectedLevel) => {
+    setSelectedFlexibility(selectedLevel);
   };
 
-  const handleToolsSelect = (selectedTools) => {
-    console.log('Selected tools:', selectedTools);
-    toolsRef.current = selectedTools;
+  const handleWorkEnvironmentSelect = (selectedWorkEnvironment) => {
+    setSelectedWorkEnvironments(selectedWorkEnvironment);
   };
 
-
-
-
-  const submitForm = () => {
-    const data = {
-      title: titleRef.current.value,
-      description: descriptionRef.current.value,
-      duration: durationRef.current.value,
-      proffesion: professionRef.current.value,
-      project: projectRef.current.value,
-      languages: languagesRef.current.value.split(","),
-      tools: toolsRef.current.value.split(","),
-      skillsRequired: skillsRequiredRef.current.value.split(","),
-      flexible: flexibleRef.current.checked,
-      fieldOfWork: fieldOfWorkRef.current.value,
-      workEnvironment: workEnvironmentRef.current.value,
-      requiredLanguages: requiredLanguagesRef.current.value.split(","),
-      style: styleRef.current.value,
+  const submitForm = async() => {
+    const currentDate = new Date();
+    const obj = {
+      title,
+      description,
+      duration: parseInt(duration, 10),
+      profession: selectedProfession,
+      flexible: selectedFlexibility,
+      workEnvironment: selectedWorkEnvironments,
+      style: styles,
+      teamSize: parseInt(teamSize, 10),
+      dateCreated: currentDate,
+      active,
+      createdBy:"admin"
     };
 
-    console.log(data);
-    setFormData(data);
+    const validationErrors = validate(obj);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      console.log(obj);
+      setFormData(obj);
+    }
+    try {
+      const response = await post(obj, {}, 'projects');
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  };
+
+  const validate = (values) => {
+    const errors = {};
+    if (!values.title) {
+      errors.title = "Required";
+    } else if (values.title.length < 2 || values.title.length > 99) {
+      errors.title = "Title should be between 2 and 99 characters";
+    }
+    if (!values.description) {
+      errors.description = "Required";
+    } else if (
+      values.description.length < 2 ||
+      values.description.length > 99
+    ) {
+      errors.description =
+        "Description should be between 2 and 99 characters";
+    }
+    if (!values.duration) {
+      errors.duration = "Required";
+    }
+    if (!values.profession) {
+      errors.profession = "Required";
+    }
+    if (!values.flexible) {
+      errors.flexible = "Required";
+    }
+    if (!values.workEnvironment) {
+      errors.workEnvironment = "Required";
+    }
+    if (values.style.length === 0) {
+      errors.style = "At least one style is required";
+    }
+    
+    if (!values.teamSize) {
+      errors.teamSize = "Required";
+    }
+    return errors;
   };
 
   const toggleRoll = () => {
@@ -105,24 +131,24 @@ function ProjectProposal() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth={rolled ? 'xs' : 'sm'} style={{ marginTop: '6rem' }}>
+      <Container
+        component="main"
+        maxWidth={rolled ? "xs" : "sm"}
+        style={{ marginTop: "6rem" }}
+      >
         <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           <Typography component="h1" variant="h5">
             Project Proposal
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            sx={{ mt: 3 }}
-          >
+          <Box component="form" noValidate id="signup-form" sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -133,7 +159,10 @@ function ProjectProposal() {
                   id="title"
                   label="Project Title"
                   autoFocus
-                  inputRef={titleRef}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  error={Boolean(errors.title)}
+                  helperText={errors.title}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -145,7 +174,10 @@ function ProjectProposal() {
                   name="description"
                   multiline
                   rows={4}
-                  inputRef={descriptionRef}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  error={Boolean(errors.description)}
+                  helperText={errors.description}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -156,78 +188,103 @@ function ProjectProposal() {
                   label="Project Duration in days"
                   name="duration"
                   type="number"
-                  inputRef={durationRef}
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  error={Boolean(errors.duration)}
+                  helperText={errors.duration}
                 />
               </Grid>
               <Grid item xs={12}>
-                <ComboBoxSelector options={proffesions} onSelect={handleProfessionSelect} selectItem={"select proffesion"} />
+                <ComboBoxSelector
+                  options={proffesions}
+                  onSelect={handleProfessionSelect}
+                  selectItem={"select profession"}
+                  error={!!errors.profession}
+                />
               </Grid>
-              {selectedProfession && (
-                <Grid item xs={12}>
-                  <CheckboxSelector
-                    options={projectsAr}
-                    onSelect={handleProjectSelect}
-                    selectItem="Select Project"
-                  />
+              <Grid item xs={12}>
+                <ComboBoxSelector
+                  options={["Low", "Middle", "High"]}
+                  onSelect={handleFlexibilitySelect}
+                  selectItem={"select flexibility level"}
+                  error={!!errors.flexible}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <ComboBoxSelector
+                  options={workEnvironment}
+                  onSelect={handleWorkEnvironmentSelect}
+                  selectItem={"select work environment"}
+                  error={!!errors.workEnvironment}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>
+                  Style
+                </Typography>
+                <Grid container spacing={1} alignItems="center">
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      label="Add Style"
+                      variant="outlined"
+                      value={style}
+                      onChange={(e) => setStyle(e.target.value)}
+                      error={Boolean(errors.style)}
+                      helperText={errors.style}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={handleAddStyle}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                  {styles.map((s, index) => (
+                    <Grid item key={index}>
+                      <Chip
+                        label={s}
+                        onDelete={() => handleRemoveStyle(index)}
+                      />
+                    </Grid>
+                  ))}
+                  {errors.style && (
+                    <div style={{ color: "red" }}>{errors.style}</div>
+                  )}
                 </Grid>
-              )}
-              {selectedProfession && (
-                <Grid item xs={12}>
-                  <CheckboxSelector
-                    options={languagesAr}
-                    onSelect={handleLanguagesSelect}
-                    selectItem="Select Languages"
-                  />
-                </Grid>
-              )}
+              </Grid>
 
-              {selectedProfession && (
-                <Grid item xs={12}>
-                  <CheckboxSelector
-                    options={toolsAr}
-                    onSelect={handleToolsSelect}
-                    selectItem="Select tools"
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="teamSize"
+                  label="Team size"
+                  name="teamSize"
+                  type="number"
+                  value={teamSize}
+                  onChange={(e) => setTeamSize(e.target.value)}
+                  error={Boolean(errors.teamSize)}
+                  helperText={errors.teamSize}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={active}
+                    onChange={() => setActive(!active)}
                   />
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="skillsRequired"
-                  label="Skills Required (comma-separated)"
-                  name="skillsRequired"
-                  inputRef={skillsRequiredRef}
-                />
+                  Active
+                </label>
+                {errors.active && (
+                  <div style={{ color: "red" }}>{errors.active}</div>
+                )}
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="fieldOfWork"
-                  label="Field of Work"
-                  name="fieldOfWork"
-                  inputRef={fieldOfWorkRef}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="workEnvironment"
-                  label="Work Environment"
-                  name="workEnvironment"
-                  inputRef={workEnvironmentRef}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="style"
-                  label="Project Style"
-                  name="style"
-                  inputRef={styleRef}
-                />
-              </Grid>
-              {/* Add more fields as needed */}
             </Grid>
             <Grid item xs={12}>
               <Button
@@ -248,7 +305,7 @@ function ProjectProposal() {
                 onClick={toggleRoll}
                 sx={{ mt: 1, mb: 2 }}
               >
-                {rolled ? 'Expand Form' : 'Roll Form'}
+                {rolled ? "Expand Form" : "Roll Form"}
               </Button>
             </Grid>
             <Grid container justifyContent="flex-end">
@@ -261,18 +318,16 @@ function ProjectProposal() {
           </Box>
         </Box>
       </Container>
-      {formData && (
+      {/* {formData && (
         <Box mt={4}>
           <Typography variant="h6" align="center">
             Submitted Proposal:
           </Typography>
           <pre>{JSON.stringify(formData, null, 2)}</pre>
         </Box>
-      )}
+      )} */}
     </ThemeProvider>
   );
 }
 
 export default ProjectProposal;
-
-

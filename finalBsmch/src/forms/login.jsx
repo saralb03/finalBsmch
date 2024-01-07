@@ -37,21 +37,23 @@ export default function LogIn() {
 
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let obj = {
         email: data.get('email'),
         password: data.get('password')
     }
-    //call to database connection value will contain the token 
-
-    // window.localStorage.setItem(value);
-
-    console.log(obj);
-    setIsSubmitted(true);
-    doApi(data);
-    //signup(obj.email, obj.password);
+    try {
+      const response = await post(obj, {}, 'login');
+      console.log(response);
+      const token = response.data;
+      console.log(token);
+      window.localStorage.setItem('token', token);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
   const doApi = async (_dataBody) => {
     try {

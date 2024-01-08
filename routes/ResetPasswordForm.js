@@ -2,7 +2,7 @@ const React = require('react');
 const { useRef } = require('react');
 
 const ResetPasswordForm = ({ token }) => {
-    console.log("ResetPasswordForm");
+  console.log("ResetPasswordForm");
   const newPasswordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
 
@@ -12,7 +12,8 @@ const ResetPasswordForm = ({ token }) => {
 
     const newPassword = newPasswordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
-
+    console.log(newPassword);
+    console.log(confirmPassword);
     // Check if passwords match
     if (newPassword !== confirmPassword) {
       console.log('Passwords do not match');
@@ -29,16 +30,24 @@ const ResetPasswordForm = ({ token }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto', marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '8px' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Reset Password</h2>
+
       <input type="hidden" id="token" name="token" value={token} />
-      <label htmlFor="newPassword">New Password:</label>
-      <input type="password" id="newPassword" name="newPassword" ref={newPasswordRef} required />
-      <br />
-      <label htmlFor="confirmPassword">Confirm Password:</label>
-      <input type="password" id="confirmPassword" name="confirmPassword" ref={confirmPasswordRef} required />
-      <br />
-      <input type="submit" value="Reset Password" onClick={handleSubmit}/>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor="newPassword" style={{ display: 'block', marginBottom: '5px' }}>New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" ref={newPasswordRef} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }} required />
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '5px' }}>Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" ref={confirmPasswordRef} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }} required />
+      </div>
+
+      <button type="submit" style={{ backgroundColor: '#007bff', color: '#fff', padding: '10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Reset Password</button>
     </form>
+
   );
 };
 

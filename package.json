@@ -5,7 +5,6 @@
   "scripts": {
     "start": "nodemon --exec npx babel-node app.js"
   },
-  
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema({
   workEnvironment: { type: String, required: true },
   style: { type:[String] },
   teamSize: { type: Number, required: true },  // Change type to Number for teamSize
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+  createdBy: { type: String, required: true }, 
   dateCreated: { type: mongoose.Schema.Types.Date, required:true},
   active:{ type: Boolean, default: true}
 });

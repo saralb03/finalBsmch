@@ -4,7 +4,7 @@ const ReactDOMServer = require('react-dom/server');
 const ResetPasswordForm = require('./ResetPasswordForm');
 const React = require('react');
 const emailSender = require("../utils/emailSender");
-const { createResetUrl } = require("../services/emailService"); 
+const { createResetUrl } = require("../services/emailService");
 const {
   UserModel,
   validUser,
@@ -178,51 +178,13 @@ const changeActive = async (req, res) => {
   }
 };
 
-// const resetPassword = async (req, res) => {
-//   const resetToken = req.params.reset_token;
-//   // const encryptedResetToken = crypto
-//   //   .createHash("sha256")
-//   //   .update(resetToken)
-//   //   .digest("hex");
-//   const newPassword = req.body.new_password;
-//   const confirmNewPassword = req.body.confirm_new_password;
-//   if (newPassword != confirmNewPassword) {
-//     res.status(400).json("different passswords");
-//   }
-//   let encryptedPasssword = await bcrypt.hash(newPassword, 10);
-//   //let encryptedPasssword =newPassword;
-//   try {
-//     console.log(resetToken);
-//     //  console.log(encryptedResetToken);
-//     //     console.log(resetToken);
-//     const user = await UserModel.findOneAndUpdate(
-//       {
-//         password_reset_token: resetToken,
-//         password_reset_expires: { $gt: Date.now() },
-//       },
-//       {
-//         password: encryptedPasssword,
-//         password_reset_token: null,
-//         password_reset_expires: null,
-//       },
-//       { new: true }
-//     );
 
-//     if (!user) {
-//       res.status(400).json("Token is expired or wrong");
-//     }
-
-//     user.password = "********";
-//     res.json(user);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// };
 
 const forgotPassword = async (req, res) => {
   const email = req.body.email;
   const { passwordResetToken, passwordResetExpires } = createResetToken();
   console.log(passwordResetToken);
+  console.log(passwordResetExpires);
 
   try {
     const user = await UserModel.findOneAndUpdate(
@@ -350,7 +312,6 @@ const createResetToken = () => {
 //     res.status(500).json({ error: 'Internal Server Error' });
 //   }
 // };
-
 const resetPassword = async (req, res) => {
   console.log("reset pass");
   const { token } = req.query;
@@ -371,18 +332,53 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired token reset password' });
     }
 
+    // Now you can use 'formHtml' as needed in your backend response or wherever it's required
+
     // Render the ResetPasswordForm component with the token, updatePassword function, and redirectTo
     const formHtml = ReactDOMServer.renderToString(
       <ResetPasswordForm token={token} updatePassword={updatePassword}/>
     );
-
-    // Send the HTML form as the response
+    
     res.send(formHtml);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+// const resetPassword = async (req, res) => {
+//   console.log("reset pass");
+//   const { token } = req.query;
+
+//   // Check if the token is present
+//   if (!token) {
+//     return res.status(400).json({ error: 'Invalid token' });
+//   }
+
+//   try {
+//     // Find user by password_reset_token and check expiration
+//     const user = await UserModel.findOne({
+//       password_reset_token: token,
+//       password_reset_expires: { $gt: new Date() },
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({ error: 'Invalid or expired token reset password' });
+//     }
+
+//     // Now you can use 'formHtml' as needed in your backend response or wherever it's required
+
+//     // Render the ResetPasswordForm component with the token, updatePassword function, and redirectTo
+//     const formHtml = ReactDOMServer.renderToString(
+//       <ResetPasswordForm token={token} updatePassword={updatePassword}/>
+//     );
+    
+//     res.send(formHtml);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
 
 
 
@@ -421,13 +417,13 @@ const updatePassword = async (token, newPassword, confirmPassword) => {
 };
 const getUserById = async (req, res) => {
   try {
-    const userId = req.params.userId; 
+    const userId = req.params.userId;
     const user = await UserModel.findById(userId);
-    
+
     if (!user) {
       return res.json({ msg: "User not found" });
     }
-    
+
     res.json({ user });
   } catch (err) {
     console.log(err);
@@ -452,7 +448,7 @@ module.exports = {
   changeActive,
   createResetToken,
   forgotPassword,
-  resetPassword, 
+  resetPassword,
   updatePassword,
   getUserById
 };

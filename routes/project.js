@@ -3,9 +3,10 @@ const { ProjectModel } = require("../models/projectModel");
 const createProject = async (req, res) => {
     try {
       // Assume you have extracted user ID from headers (you can modify this based on your actual implementation)
-      const createdBy = req.headers['user-id'];
+      // const createdBy = req.headers['user-id'];
   
-      let project = new ProjectModel({ ...req.body, createdBy });//לבדוק למה הוא הוסיף 3 נקודות, יכול להיות שאין צורך
+      // let project = new ProjectModel({ ...req.body, createdBy });//לבדוק למה הוא הוסיף 3 נקודות, יכול להיות שאין צורך
+      let project = new ProjectModel({ ...req.body});
       await project.save();
       res.status(201).json(project);
     } catch (err) {

@@ -12,6 +12,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { apiService } from '../api/apiService';
 
 function Copyright(props) {
   return (
@@ -29,14 +30,25 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function ForgotPassword() {
-  const handleSubmit = (event) => {
+  const { postData } = apiService();
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let obj = {
       email: data.get('email'),
-      password: data.get('password'),
     };
     console.log(obj);
+    try { 
+      const response = await postData('forgotPassword',obj);
+      console.log(response);
+      const  { password_reset_expires, password_reset_token} = response;
+      console.log(password_reset_expires);
+      console.log(password_reset_token);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+
     // Handle the form submission (password recovery logic)
   };
 

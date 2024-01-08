@@ -19,6 +19,8 @@ import {
 import { useState } from 'react';
 import { post } from '../api/appApi';
 import { apiService } from '../api/apiService';
+import { AppContext } from '../context/context';
+import  { useContext } from 'react'
 
 
 
@@ -42,6 +44,7 @@ export default function LogIn() {
   const { getAuthenticatedData } = apiService();
 
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const {isLoggedIn, setIsLoggedIn} = useContext(AppContext);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -57,6 +60,7 @@ export default function LogIn() {
       window.localStorage.setItem('token', token);
       const response2 = await getAuthenticatedData('myInfo', token);
       console.log(response2);
+      
 
       const role = response2.role;
       const _id = response2._id;
@@ -119,7 +123,7 @@ export default function LogIn() {
 
       window.localStorage.setItem('role', role);
       window.localStorage.setItem('_id', _id);
-
+      setIsLoggedIn(true);
 
 
 

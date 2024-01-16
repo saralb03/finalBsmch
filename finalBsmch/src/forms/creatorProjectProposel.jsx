@@ -17,10 +17,11 @@ import CheckboxSelector from "../comps_stracture/checkBoxSelector";
 import { apiService } from '../api/apiService';
 import { useLocation } from 'react-router-dom';
 import Chip from "@mui/material/Chip";
-
+import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
 
 function CreatorProjectProposal({ formData }) {
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [skill, setSkill] = useState('');
   const [skills, setSkills] = useState([]);
@@ -46,6 +47,7 @@ function CreatorProjectProposal({ formData }) {
     }
     try {
       const response = await postData('creator-projects',obj);
+      navigate('/homeComp');
       console.log(response);
     } catch (error) {
       console.error(error);

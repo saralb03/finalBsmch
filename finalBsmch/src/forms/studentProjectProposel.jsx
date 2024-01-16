@@ -17,11 +17,13 @@ import CheckboxSelector from "../comps_stracture/checkBoxSelector";
 import { apiService } from '../api/apiService';
 import { useLocation } from 'react-router-dom';
 import Chip from "@mui/material/Chip";
+import { useNavigate } from 'react-router-dom';
 
 
 const theme = createTheme();
 
 function StudentProjectProposal() {
+    const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const projecSizes = ["small", "medium", "large"];
     const academicLevels = ["First Degree", "Second Degree", "Diploma", "Course"];
@@ -54,6 +56,7 @@ function StudentProjectProposal() {
         }
         try {
             const response = await postData('student-projects', obj);
+            navigate('/homeComp');
             console.log(response);
         } catch (error) {
             console.error(error);

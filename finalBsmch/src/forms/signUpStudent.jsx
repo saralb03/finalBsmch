@@ -12,13 +12,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import { post } from '../api/appApi';
 import Chip from '@mui/material/Chip';
-
+import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
 
 export default function SignUpStudent({ formData }) {
   const [experience, setExperience] = useState('');
   const [experiences, setExperiences] = useState([]);
-
+  const navigate = useNavigate();
   const handleAddExperience = () => {
     if (experience.trim() !== '') {
       setExperiences((prevExperiences) => [...prevExperiences, experience]);
@@ -49,10 +49,12 @@ export default function SignUpStudent({ formData }) {
     // Use try-catch for asynchronous operations
     try {
       const response = await post(obj, {}, 'student');
-      console.log(response);
+      navigate('/homeComp');
+      
     } catch (error) {
       console.error(error);
       alert(error.message);
+      navigate('/signUp');
     }
   };
 

@@ -14,10 +14,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import ComboBoxSelector from '../comps_stracture/comboBoxSelector';
 import { post } from '../api/appApi';
+import { useNavigate } from 'react-router-dom';
+
 
 const theme = createTheme();
 
 export default function SignUpCreator({ formData }) {
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -33,7 +36,7 @@ export default function SignUpCreator({ formData }) {
 
         try {
             const response = await post(obj, {}, 'creator');
-            console.log(response);
+            navigate('/homeComp')
         } catch (error) {
             console.error(error);
             alert(error.message);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Link, NavLink } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Link, NavLink,useNavigate } from "react-router-dom"
 import { AppContext } from '../context/context'
 import SignUp from '../forms/signUp';
 import LogIn from "../forms/login";
@@ -20,10 +20,11 @@ import CreatorProjectInfo from "../forms/creatorProjectInfo";
 
 
 export default function AppRoutes() {
-
+    const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.clear();
         setIsLoggedIn(false);
+        navigate('/homeComp');
     };
 
     const [countriesAr, setCountriesAr] = useState([]);
@@ -83,6 +84,7 @@ export default function AppRoutes() {
                     <Route path="/forgotPassword" element={<ForgotPassword />} />
                     <Route path="/studentProjectInfo" element={<StudentProjectInfo />} />
                     <Route path="/creatorProjectInfo" element={<CreatorProjectInfo />} />
+                    <Route path="/homeComp" element={<HomeComp/>} />
                 </Routes>
                 <Footer />
             </AppContext.Provider>

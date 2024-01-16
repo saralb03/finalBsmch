@@ -21,7 +21,8 @@ import { post } from '../api/appApi';
 import { apiService } from '../api/apiService';
 import { AppContext } from '../context/context';
 import  { useContext } from 'react'
-
+import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 
 function Copyright(props) {
@@ -38,10 +39,12 @@ function Copyright(props) {
 }
 
 const defaultTheme = createTheme();
+// const navigate = useNavigate();
 
 export default function LogIn() {
   const { postData } = apiService();
   const { getAuthenticatedData } = apiService();
+  const navigate = useNavigate();
 
   const [isSubmitted, setIsSubmitted] = useState(false)
   const {isLoggedIn, setIsLoggedIn} = useContext(AppContext);
@@ -85,6 +88,7 @@ export default function LogIn() {
       window.localStorage.setItem('location', location);
       window.localStorage.setItem('dateCreated', dateCreated);
 
+
       if (user ==='students') {
 
         const institution = response2.institution;
@@ -124,6 +128,7 @@ export default function LogIn() {
       window.localStorage.setItem('role', role);
       window.localStorage.setItem('_id', _id);
       setIsLoggedIn(true);
+      navigate('/homeComp');
 
 
 

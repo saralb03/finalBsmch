@@ -125,57 +125,57 @@ function SignUp() {
 
     const validate = (values) => {
         const errors = {}
-        // if (!values.firstName) {
-        //     errors.firstName = 'Required'
-        // } else if (values.firstName.length < 2 || values.firstName.length > 99) {
-        //     errors.firstName = 'First name should be between 2 and 99 characters'
-        // }
-        // if (!values.lastName) {
-        //     errors.lastName = 'Required'
-        // } else if (values.lastName.length < 2 || values.lastName.length > 99) {
-        //     errors.lastName = 'Last name should be between 2 and 99 characters'
-        // }
-        // if (!values.email) {
-        //     errors.email = 'Required'
-        // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-        //     errors.email = 'Invalid email address'
-        // }
-        // if (!values.password) {
-        //     errors.password = 'Required';
-        // } else {
-        //     // Password regex pattern for at least one digit, one lowercase letter, one uppercase letter, and 8-32 characters
-        //     const reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,32}$/;
-        //     if (!reg.test(values.password)) {
-        //         errors.password = 'Password must contain at least one digit, one lowercase letter, one uppercase letter, and be 8-32 characters long';
-        //     }
-        // }
-        // if (!values.passwordConfirm) {
-        //     errors.passwordConfirm = 'Required';
-        // } else {
-        //     if (values.passwordConfirm !== values.password) {
-        //         errors.passwordConfirm = 'Passwords do not match';
-        //     }
-        // }
+        if (!values.firstName) {
+            errors.firstName = 'Required'
+        } else if (values.firstName.length < 2 || values.firstName.length > 99) {
+            errors.firstName = 'First name should be between 2 and 99 characters'
+        }
+        if (!values.lastName) {
+            errors.lastName = 'Required'
+        } else if (values.lastName.length < 2 || values.lastName.length > 99) {
+            errors.lastName = 'Last name should be between 2 and 99 characters'
+        }
+        if (!values.email) {
+            errors.email = 'Required'
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+            errors.email = 'Invalid email address'
+        }
+        if (!values.password) {
+            errors.password = 'Required';
+        } else {
+            // Password regex pattern for at least one digit, one lowercase letter, one uppercase letter, and 8-32 characters
+            const reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,32}$/;
+            if (!reg.test(values.password)) {
+                errors.password = 'Password must contain at least one digit, one lowercase letter, one uppercase letter, and be 8-32 characters long';
+            }
+        }
+        if (!values.passwordConfirm) {
+            errors.passwordConfirm = 'Required';
+        } else {
+            if (values.passwordConfirm !== values.password) {
+                errors.passwordConfirm = 'Passwords do not match';
+            }
+        }
 
-        // if (!values.phone) {
-        //     errors.phone = 'Required'
+        if (!values.phone) {
+            errors.phone = 'Required'
 
-        // } else if (!values.phone.match(/^\d{10}$/)) {
-        //     errors.phone = 'Please provide a valid phone number'
-        // }
-        // if (!values.birth_date) {
-        //     errors.birth_date = 'Required';
-        // } else {
-        //     const today = new Date();
-        //     today.setHours(0, 0, 0, 0);
+        } else if (!values.phone.match(/^\d{10}$/)) {
+            errors.phone = 'Please provide a valid phone number'
+        }
+        if (!values.birth_date) {
+            errors.birth_date = 'Required';
+        } else {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-        //     const birthdate = new Date(values.birth_date);
+            const birthdate = new Date(values.birth_date);
 
-        //     // Check whether the provided date is equal to or less than the current date.
-        //     if (birthdate > today) {
-        //         errors.birth_date = 'Birth date must not be in the future';
-        //     }
-        // }
+            // Check whether the provided date is equal to or less than the current date.
+            if (birthdate > today) {
+                errors.birth_date = 'Birth date must not be in the future';
+            }
+        }
         if (!values.location || !values.location.trim()) {
             errors.location = 'Required';
         }

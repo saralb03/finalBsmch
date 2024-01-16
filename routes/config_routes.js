@@ -30,6 +30,8 @@ router.post("/forgotPassword", userController.forgotPassword);
 // Route for resetting the password
 router.get('/reset-password', userController.resetPassword);
 router.get('/reset-password', userController.resetPassword);
+router.get('/getUserFilteredProjects/:userType/:user_id', userController.getUserFilteredProjects);
+
 
 // Route for updating the password
 router.get('/getUserById/:userId', userController.getUserById);
@@ -41,14 +43,17 @@ router.post("/creator", creatorController.createCreator);
 // Project routes
 router.post("/projects", projectController.createProject);
 router.get("/projects", projectController.getProjects);
+router.get("/getFilteredProjects", projectController.getFilteredProjects);
 
 // Student Project routes
 router.post("/student-projects", studentProjectController.createStudentProject);
 router.get("/student-projects", studentProjectController.getStudentProjects);
+router.get("/getFilteredSProjects", studentProjectController.getFilteredSProjects);
 
 // Creator Project routes
 router.post("/creator-projects", creatorProjectController.createCreatorProject);
 router.get("/creator-projects", creatorProjectController.getCreatorProjects);
+router.get("/getFilteredCProjects", creatorProjectController.getFilteredCProjects);
 
 // Get projects by user ID
 router.get('/projects/user/:userId', projectController.getProjectsByUserId);

@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt"); 
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
@@ -70,12 +70,12 @@ let userSchema = new mongoose.Schema({
   // passwordChangedAt: Date,
   password_reset_token: {
     type: String,
-  default: null,
-},
-  password_reset_expires:{ 
-    type:Date,
-  default: null,
-},
+    default: null,
+  },
+  password_reset_expires: {
+    type: Date,
+    default: null,
+  },
 });
 
 // Add a pre-save hook to handle the unique index error

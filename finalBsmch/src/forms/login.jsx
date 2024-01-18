@@ -56,6 +56,7 @@ export default function LogIn() {
       email: data.get('email'),
       password: data.get('password')
     }
+    console.log(obj);
     try {
       const response1 = await postData('login', obj);
       const token = response1.token;
@@ -197,7 +198,7 @@ export default function LogIn() {
           >
             {/* You can customize this section with additional content */}
             <Typography component="h1" variant="h5" color="white">
-              Welcome to My Website
+              Welcome to SkillSynce
             </Typography>
           </Grid>
           {/* Right Section - Sign In Form */}

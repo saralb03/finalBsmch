@@ -114,7 +114,7 @@ const CreatorInfo = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: `url('img/back2.jpg')`, // Add your image URL here
+        //backgroundImage: `url('img/back2.jpg')`, // Add your image URL here
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: 'white', // Text color

@@ -58,9 +58,9 @@ export default function Footer() {
           </p>
         </section>
 
-        <section>
+        {/* <section> */}
           {/* Links */}
-          <div className="row">
+          {/* <div className="row">
             <div className="col-lg-3 col-md-6 mb-4 mb-md-0">
               <h5 className="text-uppercase text-white">Links</h5>
               <ul className="list-unstyled mb-0">
@@ -88,8 +88,8 @@ export default function Footer() {
             </div>
 
             {/* Add more columns as needed */}
-          </div>
-        </section>
+          {/* </div>
+        </section> */} 
       </div>
 
       <div className="text-center p-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>

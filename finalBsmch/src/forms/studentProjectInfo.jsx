@@ -42,7 +42,7 @@ const StudentProjectInfo = () => {
         console.log('Edit button clicked');
         // Redirect to the edit page or handle editing logic here
         // For example, you can navigate to a different route for editing
-        navigate('/editProject'); // Replace with the appropriate route
+        navigate('/editProjectStudent'); // Replace with the appropriate route
     };
 
     return (

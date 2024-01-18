@@ -86,7 +86,7 @@ export default function ForgotPassword() {
           >
             {/* You can customize this section with additional content */}
             <Typography component="h1" variant="h5" color="white">
-              Welcome to My Website
+              Welcome to SkillSynce
             </Typography>
           </Grid>
           {/* Right Section - Sign In Form */}

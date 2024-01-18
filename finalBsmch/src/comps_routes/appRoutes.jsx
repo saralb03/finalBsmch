@@ -17,6 +17,8 @@ import HomeComp from "../comps_stracture/homeComp";
 import Footer from "../comps_stracture/footer";
 import StudentProjectInfo from "../forms/studentProjectInfo";
 import CreatorProjectInfo from "../forms/creatorProjectInfo";
+import MyProjects from "../forms/myProjects";
+import MightInterests from "../forms/mightINtersets";
 
 
 export default function AppRoutes() {
@@ -56,6 +58,12 @@ export default function AppRoutes() {
                                     <NavLink to="/studentProList" className="text-light text-decoration-none mx-3" activeClassName="active">
                                         Student Project List
                                     </NavLink>
+                                    <NavLink to="/myProjects" className="text-light text-decoration-none mx-3" activeClassName="active">
+                                        My Projects
+                                    </NavLink>
+                                    <NavLink to="/mightINtersets" className="text-light text-decoration-none mx-3" activeClassName="active">
+                                            May interest you
+                                    </NavLink>
                                 </>
                             )}
                         </div>
@@ -85,6 +93,8 @@ export default function AppRoutes() {
                     <Route path="/studentProjectInfo" element={<StudentProjectInfo />} />
                     <Route path="/creatorProjectInfo" element={<CreatorProjectInfo />} />
                     <Route path="/homeComp" element={<HomeComp/>} />
+                    <Route path="/myProjects" element={<MyProjects/>} />
+                    <Route path="/mightINtersets" element={<MightInterests/>} />
                 </Routes>
                 <Footer />
             </AppContext.Provider>
